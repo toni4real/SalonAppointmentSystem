@@ -3,23 +3,27 @@ require_once '../includes/db_connection.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $phone = mysqli_real_escape_string($conn, $_POST['phone']);
 
-    $query = "SELECT * FROM admins WHERE email = '$email'";
-    $result = mysqli_query($conn, $query);
+    // Check if email already exists
+    $check_query = "SELECT * FROM customers WHERE email = '$email'";
+    $check_result = mysqli_query($conn, $check_query);
 
-    if (mysqli_num_rows($result) == 1) {
-        $admin = mysqli_fetch_assoc($result);
-        if (password_verify($password, $admin['password'])) {
-            $_SESSION['admin_id'] = $admin['admin_id'];
-            header('Location: admin_dashboard.php');
+    if (mysqli_num_rows($check_result) > 0) {
+        $error = 'Email is already registered.';
+    } else {
+        // Insert new customer
+        $query = "INSERT INTO customers (name, email, password, phone) VALUES ('$name', '$email', '$password', '$phone')";
+
+        if (mysqli_query($conn, $query)) {
+            header('Location: customer_login.php');
             exit();
         } else {
-            $error = 'Invalid email or password';
+            $error = 'Registration failed. Please try again.';
         }
-    } else {
-        $error = 'Invalid email or password';
     }
 }
 ?>
@@ -30,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Salon System</title>
+    <title>Customer Registration - Salon System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -38,9 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            background: linear-gradient(to right, #ffafbd, #ffc3a0);
         }
-        .login-container {
+        .register-container {
             max-width: 400px;
             background: white;
             padding: 2rem;
@@ -57,22 +61,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <div class="login-container">
-        <h2 class="text-center mb-4">Admin Login</h2>
+    <div class="register-container">
+        <h2 class="text-center mb-4">Customer Registration</h2>
         <?php if (isset($error)): ?>
             <div class="alert alert-danger"> <?php echo $error; ?> </div>
         <?php endif; ?>
         <form method="POST" action="">
             <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-            <p class="mt-3 text-center">Don't have an account? <a href="admin_registration.php">Register here</a></p>
+            <button type="submit" class="btn btn-success w-100">Register</button>
+            <p class="mt-3 text-center">Already have an account? <a href="customer_login.php">Login here</a></p>
             <a href="../index.php">Back to Home</a>
         </form>
     </div>
