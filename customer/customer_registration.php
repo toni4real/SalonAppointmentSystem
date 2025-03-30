@@ -37,36 +37,167 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Customer Registration - Salon System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to right, #ffafbd, #ffc3a0);
-        }
-        .register-container {
-            max-width: 400px;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        a {
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
+  body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background:#F6DEF6;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+    }
+
+    .register-container {
+        background-color: #fff;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        width: 850px; /* Adjust width */
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start; /* Align items to the top */
+        justify-content: space-between;
+    }
+
+    .left-content {
+        flex: 0 0 40%; /* Adjust width for left side */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-right: 30px; /* Add some spacing */
+    }
+
+    .logo-container {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #f77fbe; /* Pink accent color */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .logo-container::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f77fbe; /* Pink accent color */
+        /* You might want to use a different icon or adjust this mask */
+        mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+        -webkit-mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+    }
+
+    h2 {
+        color: #f77fbe; /* Pink title color */
+        margin-bottom: 40px;
+        font-size: 2.2em;
+    }
+
+    .btn-success {
+        background-color: #f77fbe; /* Pink button color */
+        color: #fff;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 40px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: auto;
+        margin-bottom: 20px;
+    }
+
+    .btn-success:hover {
+        background-color: #e65aa9; /* Darker pink on hover */
+    }
+
+    .links-container {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .links-container p,
+    .links-container a {
+        font-size: 0.9em;
+        color: #777;
+        text-decoration: none;
+    }
+
+    .links-container a {
+        color: #f77fbe; /* Pink link color */
+        font-weight: bold;
+    }
+
+    .links-container a:hover {
+        text-decoration: underline;
+    }
+
+    .registration-form {
+        flex: 0 0 55%; /* Adjust width for right side */
+        padding-left: 50px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .alert-danger {
+        background-color: #ffebee; /* Light red for error */
+        color: #d32f2f; /* Dark red for error text */
+        padding: 12px;
+        border-radius: 25px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .mb-3 {
+        margin-bottom: 20px !important;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.9em;
+        color: #555;
+    }
+
+    .form-control {
+        width: calc(100% - 30px);
+        padding: 12px 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 1em;
+        box-sizing: border-box;
+        outline: none;
+        color: #333;
+        background-color: #f9f9f9;
+    }
+
+    .form-control:focus {
+        border-color: #f77fbe;
+        box-shadow: 0 0 5px rgba(247, 127, 190, 0.3);
+    }
     </style>
 </head>
 
 <body>
-    <div class="register-container">
-        <h2 class="text-center mb-4">Customer Registration</h2>
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"> <?php echo $error; ?> </div>
-        <?php endif; ?>
-        <form method="POST" action="">
+<div class="register-container">
+        <div class="left-content">
+            <div class="logo-container"></div>
+            <h2>Customer Registration</h2>
+            <button type="submit" class="btn btn-success" form="registrationForm">Register</button>
+            <div class="links-container">
+                <p>Already have an account? <a href="customer_login.php">Login here</a></p>
+                <a href="../index.php">Back to Home</a>
+            </div>
+        </div>
+        <form method="POST" action="" id="registrationForm" class="registration-form">
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger"> <?php echo $error; ?> </div>
+            <?php endif; ?>
             <div class="mb-3">
                 <label for="name" class="form-label">Full Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
@@ -83,9 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-success w-100">Register</button>
-            <p class="mt-3 text-center">Already have an account? <a href="customer_login.php">Login here</a></p>
-            <a href="../index.php">Back to Home</a>
         </form>
     </div>
 </body>

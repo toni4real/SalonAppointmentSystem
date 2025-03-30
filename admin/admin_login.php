@@ -33,36 +33,144 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Admin Login - Salon System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
-        }
-        .login-container {
-            max-width: 400px;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        a {
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
+ body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color:rgb(252, 244, 244); /* Light pink background */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+    }
+
+    .login-container {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        width: 400px; /* Adjust width */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center items horizontally */
+    }
+
+    .logo-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .logo-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #cb6ce6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .logo-container::before {
+        content: '';
+        display: block;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #cb6ce6;
+        mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+        -webkit-mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+    }
+
+    h2 {
+        color: #a78bfa;
+        font-size: 2em;
+        text-align: center;
+    }
+
+    .login-form {
+        width: 80%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center form elements */
+    }
+
+    .mb-3 {
+        width: 100%;
+        margin-bottom: 15px !important;
+        text-align: left;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.9em;
+        color: #555;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1em;
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    .btn-primary {
+        background-color: #a78bfa; /* Violet color for login button */
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 30px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: auto; /* Adjust width to content */
+        margin-bottom: 15px;
+        align-self: center; /* Center the button within the form */
+    }
+
+    .btn-primary:hover {
+        background-color: #9575cd; /* Darker violet on hover */
+    }
+
+    .links-container {
+        text-align: center;
+    }
+
+    .links-container p,
+    .links-container a {
+        font-size: 0.9em;
+        color: #777;
+        text-decoration: none;
+    }
+
+    .links-container a {
+        color: #a78bfa;
+        font-weight: bold;
+    }
+
+    .links-container a:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
 
 <body>
-    <div class="login-container">
-        <h2 class="text-center mb-4">Admin Login</h2>
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"> <?php echo $error; ?> </div>
-        <?php endif; ?>
-        <form method="POST" action="">
+<div class="login-container">
+        <div class="logo-title">
+            <div class="logo-container"></div>
+            <h2>Admin Login</h2>
+        </div>
+        <form method="POST" action="" id="loginForm" class="login-form">
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger"> <?php echo $error; ?> </div>
+            <?php endif; ?>
             <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" required>
@@ -71,10 +179,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-            <p class="mt-3 text-center">Don't have an account? <a href="admin_registration.php">Register here</a></p>
-            <a href="../index.php">Back to Home</a>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
+        <div class="links-container">
+            <p>Don't have an account? <a href="admin_registration.php">Register here</a></p>
+            <p><a href="../index.php">Back to Home</a></p>
+        </div>
     </div>
 </body>
 
