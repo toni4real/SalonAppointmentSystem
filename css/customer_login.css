@@ -1,0 +1,125 @@
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #F6DEF6; /* Gradient background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 400px; /* Adjust width to match the image */
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center items horizontally */
+}
+
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo-container {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #f77fbe; /* Pink accent color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.logo-container::before {
+    content: '';
+    display: block;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #f77fbe; /* Pink accent color */
+    mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+    -webkit-mask: url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M50 6a44 44 0 0 0-44 44c0 24.3 14.8 40.7 35.5 47.4 2.3.7 3.1 1.1 3.1 1.1v-2.6c0-1.5-.6-2.8-1.6-3.8-10.8-10.2-17.5-23.4-17.5-38.1a17.6 17.6 0 0 1 35.2 0c0 14.7-6.7 27.9-17.5 38.1-1 1-1.6 2.3-1.6 3.8v2.6s.8-.4 3.1-1.1c20.7-6.7 35.5-23.1 35.5-47.4a44 44 0 0 0-44-44z"/%3E%3C/svg%3E') center/contain no-repeat;
+}
+
+h2 {
+    color: #f77fbe; /* Pink title color */
+    font-size: 2em;
+    text-align: center;
+}
+
+.login-form {
+    width: 80%; /* Adjust form width */
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center form elements */
+}
+
+.mb-3 {
+    width: 100%; /* Make input groups full width */
+    margin-bottom: 15px !important;
+    text-align: left; /* Align labels to the left */
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-size: 1em;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.btn-primary {
+    background-color: #f77fbe; /* Pink button color */
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto; /* Adjust width to content */
+    margin-bottom: 15px;
+    align-self: center; /* Center the button within the form */
+}
+
+.btn-primary:hover {
+    background-color: #e65aa9; /* Darker pink on hover */
+}
+
+.links-container {
+    text-align: center;
+}
+
+.links-container p,
+.links-container a {
+    font-size: 0.9em;
+    color: #777;
+    text-decoration: none;
+}
+
+.links-container a {
+    color: #f77fbe; /* Pink link color */
+    font-weight: bold;
+}
+
+.links-container a:hover {
+    text-decoration: underline;
+}

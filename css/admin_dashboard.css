@@ -1,0 +1,19 @@
+body {
+    background: #f8f9fa;
+}
+.dashboard {
+    padding: 2rem;
+}
+.card {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
+}
+.navbar {
+    background: #4e54c8;
+}
+.navbar-brand, .nav-link, .navbar-text {
+    color: white !important;
+}
+.nav-link:hover {
+    text-decoration: underline;
+}
