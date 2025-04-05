@@ -128,8 +128,8 @@ h2 {
 .form-control {
     width: calc(100% - 30px);
     padding: 12px 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: 1px solid #f77fbe; /* Pink border */
+    border-radius: 5px;
     font-size: 1em;
     box-sizing: border-box;
     outline: none;
@@ -138,6 +138,6 @@ h2 {
 }
 
 .form-control:focus {
-    border-color: #f77fbe;
+    border-color: #e65aa9;
     box-shadow: 0 0 5px rgba(247, 127, 190, 0.3);
 }

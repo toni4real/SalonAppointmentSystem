@@ -3,7 +3,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color:rgb(252, 244, 244); /* Light pink background */
+    background-color:#d2c7e9; /* Light background */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
@@ -79,7 +79,7 @@ h2 {
 .form-control {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #a78bfa; /* Violet border */
     border-radius: 8px;
     font-size: 1em;
     box-sizing: border-box;

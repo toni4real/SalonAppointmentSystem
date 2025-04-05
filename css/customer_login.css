@@ -79,8 +79,8 @@ h2 {
 .form-control {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
+    border: 1px solid #f77fbe; /* Pink border */
+    border-radius: 5px;
     font-size: 1em;
     box-sizing: border-box;
     outline: none;

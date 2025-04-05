@@ -3,7 +3,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color:rgb(252, 244, 244); /* Light pink background */
+    background-color:#d2c7e9; /* Light background */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
@@ -127,7 +127,7 @@ h2 {
 .form-control {
     width: calc(100% - 30px);
     padding: 12px 20px;
-    border: 1px solid #ccc; /* Lighter border */
+    border: 1px solid #a78bfa; /* Violet border */
     border-radius: 5px; /* Less rounded inputs */
     font-size: 1em;
     box-sizing: border-box;
@@ -137,6 +137,6 @@ h2 {
 }
 
 .form-control:focus {
-    border-color: #a78bfa;
+    border-color: #9575cd; /* Darker violet on focus */
     box-shadow: 0 0 5px rgba(167, 139, 250, 0.3);
 }
