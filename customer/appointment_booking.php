@@ -35,8 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="../css/appointment_booking.css">
     <title>Book Appointment</title>
 </head>
+
 <body>
     <h2>Book an Appointment</h2>
 
