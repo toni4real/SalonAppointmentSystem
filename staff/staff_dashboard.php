@@ -45,49 +45,48 @@ $result = $stmt->get_result();
 </head>
 <body>
 
-<div class="dashboard-container">
-    <div class="card">
-        <div class="header">
-            <h3>Welcome, <?php echo htmlspecialchars($staff_name); ?> 👋</h3>
-            <a href="staff_logout.php" class="btn btn-light btn-sm float-end">Logout</a>
-        </div>
-        <div class="card-body">
-            <h5>Today's Appointments (<?php echo $today; ?>)</h5>
-            <?php if ($result->num_rows > 0): ?>
-                <table class="table table-striped">
-                    <thead>
+
+<div class="navbar">STAFF PANEL</div>
+<div class="container"> 
+    <div class="navbar-container">
+        <div class="appointment">Appointments</div>
+        <button class="history">History</button>
+        <button class="logout">Logout</button>
+    </div>
+    
+    <div class="table-container">
+            
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-dark">
                         <tr>
-                            <th>Time</th>
                             <th>Customer</th>
                             <th>Service</th>
+                            <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
+                            <th>Accept/Reject</th>
                         </tr>
                     </thead>
                     <tbody>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['service_name']); ?></td>
-                            <td><span class="badge bg-<?php 
-                                echo match ($row['status']) {
-                                    'pending' => 'warning',
-                                    'confirmed' => 'info',
-                                    'completed' => 'success',
-                                    'cancelled' => 'danger',
-                                    default => 'secondary',
-                                };
-                            ?>"><?php echo ucfirst($row['status']); ?></span></td>
-                        </tr>
-                    <?php endwhile; ?>
+                        <?php while ($appointment = mysqli_fetch_assoc($appointmentQuery)): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
+                                <td><?php echo htmlspecialchars($appointment['staff_name']); ?></td>
+                                <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($appointment['status']); ?></td>
+                                <td><?php echo htmlspecialchars($appointment['payment_status']); ?></td>
+                            </tr>
+                        <?php endwhile; ?>
                     </tbody>
                 </table>
-            <?php else: ?>
-                <p class="text-muted">You have no appointments today.</p>
-            <?php endif; ?>
+            </div>
         </div>
-    </div>
+            
 </div>
+
+
 
 </body>
 </html>
