@@ -1,22 +1,393 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white;
 }
+
+.navbar {
+    background-color: #d276e2;
+    height: 4rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    padding: 0.625rem 3.125rem;
+    z-index: 1000;
+}
+
+/* Navbar Links */
+.nav-link {
+    color: white !important; /* Ensure links are white */
+    margin-left: 20px; /* Space between links */
+    font-size: 1rem; /* Adjust font size */
+    text-decoration: none; /* Remove underline */
+    padding: 0.5rem 1rem; /* Add padding for clickability */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+    border-radius: 5px; /* Rounded corners for the background */
+}
+
+.nav-link:hover {
+    color: #f8f9fa !important; /* Change text color on hover */
+    background-color: rgba(255, 255, 255, 0.2); /* Add subtle background on hover */
+}
+
+/* Active Link */
+.nav-link.active {
+    color: #d276e2 !important; /* Highlight active link with the brand color */
+    background-color: rgba(255, 255, 255, 0.3); /* Subtle background for active state */
+}
+
+
+/* Logo text styling */
+.logo-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem; /* Adjust size as needed */
+    font-weight: 700;
+    color: white; /* Adjust color for visibility */
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+/* Navbar Brand Logo */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.nav-link {
+    color: white !important;
+    margin-left: 20px;
+}
+
+.dropdown-menu {
+    background-color: #b765cc;
+}
+
+.dropdown-item {
+    color: white;
+}
+
+/* Icon Links Styling */
+.icon-links {
+    display: flex;
+    align-items: center; /* Align icons vertically centered */
+    justify-content: center; /* Align to the right side */
+    margin-top: 20px;
+}
+
+.icon-links i {
+    font-size: 24px; /* Adjust the icon size */
+    color: white; /* Icon color */
+    margin-right: 20px; /* Space between the icons */
+    transition: color 0.3s ease-in-out; /* Smooth transition for hover */
+    cursor: pointer; /* Show cursor on hover to indicate it's clickable */
+}
+
+.icon-links i:hover {
+    color: #d276e2; /* Change icon color on hover */
+}
+
+
 .hero-section {
-    height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/salon-bg.jpg') no-repeat center center/cover;
+    background-image: url('../image/salon.png'); /* Ensure the path is correct */
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-position: center center; /* Keeps the image centered */
+    background-repeat: no-repeat; /* Prevents image repetition */
+    height: 100vh; /* Full viewport height */
+    min-height: 50rem; /* Minimum height */
+    max-height: 100rem; /* Maximum height */
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    text-align: center;
+    flex-direction: column;
+}
+
+.hero-section h1 {
+  font-family: "Dancing Script", cursive;
+  font-optical-sizing: auto;
+  font-size: 10rem;
+  font-weight: normal;
+}
+
+.hero-section p {
+    font-size: 1.5rem;
+    margin: 10px 0 40px 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.hero-section .btn {
+    background-color: #d276e2;
+    border: none;
+    padding: 10px 30px;
+}
+
+/* Book Appointment Button */
+.btn {
+    color: white; /* White text for the button */
+    background-color: #d276e2; /* Brand color as background */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Add padding to the button */
+    font-size: 1.25rem; /* Adjust font size */
+    font-weight: bold; /* Make text bold */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Ensure button is inline and clickable */
+}
+
+.btn:hover {
+    background-color: #b765cc; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly increase size for hover effect */
+}
+
+.btn:focus {
+    outline: none; /* Remove default focus outline */
+    box-shadow: 0 0 0 3px rgba(210, 118, 226, 0.5); /* Add subtle glow on focus */
+}
+
+
+.services-section {
+    height: fit-content;
+    padding: 7.5rem 0;
+    /* Add horizontal padding for buttons */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    white-space: nowrap;
+    /* Prevent cards from wrapping */
+    -webkit-overflow-scrolling: touch;
+    /* For smooth scrolling on iOS */
+    scroll-behavior: smooth;
+    /* Add smooth scrolling */
+}
+
+.service-card {
+    position: relative;
+    /* Needed for absolute positioning of the overlay */
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Smoother transition */
+    display: inline-block;
+    /* Arrange cards horizontally */
+    width: 300px;
+    /* Adjust card width as needed */
+    margin-right: 20px;
+    /* Spacing between cards */
+    margin-bottom: 20px;
+    /* Add some bottom margin for spacing if it wraps on smaller screens */
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    /* Initial fade-in and slide */
+    flex: 0 0 auto;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Add animation delay for a staggered effect */
+.service-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.service-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.service-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Add more for the number of cards you have */
+
+/* Remove margin from the last card */
+.service-card:last-child {
+    margin-right: 0;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+}
+
+.service-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+    transition: filter 0.3s ease-in-out;
+    /* Image hover effect */
+}
+
+.service-card:hover img {
+    filter: brightness(1.1);
+    /* Slightly brighten image on hover */
+}
+
+.service-card .card-body {
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    /* To ensure text stays above the overlay */
+    z-index: 1;
+    /* To ensure text stays above the overlay */
+}
+
+.service-card .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+    /* Default text color */
+    transition: color 0.3s ease-in-out;
+    /* Transition for text color */
+}
+
+.service-card .card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    /* Default text color */
+    margin-bottom: 10px;
+    transition: color 0.3s ease-in-out;
+    /* Transition for text color */
+}
+
+.card-body {
+    white-space: normal; /* Ensure text wraps normally */
+    word-wrap: break-word; /* Break words if they exceed container width */
+    overflow-wrap: break-word; /* Prevent long words from breaking layout */
+}
+
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.mb-4 {
+    margin-bottom: 2rem !important;
+    /* Reduced margin for heading */
     text-align: center;
 }
+
+/* Hover Gradient Overlay with smoother transition */
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1));
+    /* Black gradient fading out to transparent */
+    opacity: 0;
+    /* Initially hidden */
+    transition: opacity 0.3s ease-in-out;
+    z-index: 0;
+    /* Behind the text */
+}
+
+.service-card:hover::before {
+    opacity: 1;
+    /* Show the gradient on hover */
+}
+
+/* Optional: Change text color on hover for better contrast with smoother transition */
+.service-card:hover .card-title,
+.service-card:hover .card-text {
+    color: #fff;
+    transition: color 0.3s ease-in-out;
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+.services-section::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for Firefox */
 .services-section {
-    padding: 4rem 0;
+    scrollbar-width: none;
 }
-.service-card {
-    transition: transform 0.3s ease;
+
+/* Scroll Buttons with smoother transition */
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    margin: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    /* Added background transition */
 }
-.service-card:hover {
-    transform: translateY(-10px);
+
+.scroll-button:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Darken on hover */
 }
+
+.scroll-button.left {
+    left: 10px;
+}
+
+.scroll-button.right {
+    right: 10px;
+}
+
+.scroll-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Fading edges for better visual indication of scroll with smoother transition */
+.services-section::before,
+.services-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+    z-index: 5;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    /* Added opacity transition */
+}
+
+.services-section::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.scroll-wrapper {
+    white-space: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 1rem;
+}
+
+
