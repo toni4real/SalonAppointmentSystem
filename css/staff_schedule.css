@@ -1,6 +1,6 @@
 body {
   background-color: #f9f9f9;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
 }
 
@@ -23,52 +23,48 @@ body {
   background-color: #9575cd;
 }
 
-.dashboard {
+.staff-schedules-container {
   margin-top: 50px;
 }
 
-.dashboard h2 {
+.staff-schedules-container h2 {
   color: #a78bfa;
   text-align: center;
   margin-bottom: 30px;
 }
 
-.card {
+.staff-schedules-table {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+.staff-schedules-table thead {
+  background-color: #a78bfa;
+  color: #fff;
 }
 
-.card i {
-  color: #a78bfa;
-  font-size: 3rem;
+.staff-schedules-table th,
+.staff-schedules-table td {
+  padding: 15px;
+  text-align: center;
 }
 
-.card h5 {
-  color: #333;
-}
-
-.card h2 {
-  color: #a78bfa;
+.staff-schedules-table th {
   font-weight: bold;
 }
 
-.card-body {
-  padding: 30px;
+.staff-schedules-table tbody tr:hover {
+  background-color: #f1f1f1;
 }
 
-.card .btn {
+.btn {
   border-radius: 20px;
   background-color: #a78bfa;
   color: #fff;
 }
 
-.card .btn:hover {
+.btn:hover {
   background-color: #9575cd;
 }
 

@@ -9,76 +9,70 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Fetch all appointments
-$query = "
-    SELECT a.appointment_id, c.name AS customer_name, s.name AS staff_name, sr.service_name, a.appointment_date, a.appointment_time, a.status
-    FROM appointments a
-    JOIN customers c ON a.customer_id = c.customer_id
-    JOIN staff s ON a.staff_id = s.staff_id
-    JOIN services sr ON a.service_id = sr.service_id
-    ORDER BY a.appointment_date DESC
-";
+// Fetch appointments from the database
+$query = "SELECT * FROM appointments";
 $result = mysqli_query($conn, $query);
 
-// Update appointment status
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['appointment_id'], $_POST['status'])) {
-    $appointment_id = intval($_POST['appointment_id']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
-
-    $updateQuery = "UPDATE appointments SET status = '$status' WHERE appointment_id = $appointment_id";
-    mysqli_query($conn, $updateQuery);
-    header('Location: admin_appointments.php');
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Manage Appointments</title>
+    <meta charset="UTF-8">
+    <title>Manage Appointments - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/admin_appointments.css">
 </head>
 <body>
-    <h2>Manage Appointments</h2>
-    <a href="admin_dashboard.php">Back to Dashboard</a>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Appointment ID</th>
-                <th>Customer</th>
-                <th>Staff</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                <tr>
-                    <td><?php echo $row['appointment_id']; ?></td>
-                    <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['staff_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['service_name']); ?></td>
-                    <td><?php echo $row['appointment_date']; ?></td>
-                    <td><?php echo $row['appointment_time']; ?></td>
-                    <td><?php echo $row['status']; ?></td>
-                    <td>
-                        <form method="post">
-                            <input type="hidden" name="appointment_id" value="<?php echo $row['appointment_id']; ?>">
-                            <select name="status">
-                                <option value="pending" <?php echo $row['status'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
-                                <option value="confirmed" <?php echo $row['status'] == 'confirmed' ? 'selected' : ''; ?>>Confirmed</option>
-                                <option value="completed" <?php echo $row['status'] == 'completed' ? 'selected' : ''; ?>>Completed</option>
-                                <option value="cancelled" <?php echo $row['status'] == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                            </select>
-                            <button type="submit">Update</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">Salon Admin Panel</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Back to Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="payment_history.php">View Payment Records</a></li>
+                    <li class="nav-item"><a class="nav-link" href="staff_schedule.php">Manage Staff Schedules</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_logout.php">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container appointments-container">
+        <h2>Manage Appointments</h2>
+        <div class="appointments-table table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Customer Name</th>
+                        <th>Service</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($appointment = mysqli_fetch_assoc($result)) { ?>
+                        <tr>
+                            <td><?php echo $appointment['appointment_id']; ?></td>
+                            <td><?php echo $appointment['customer_name']; ?></td>
+                            <td><?php echo $appointment['service']; ?></td>
+                            <td><?php echo $appointment['appointment_date']; ?> <?php echo $appointment['appointment_time']; ?></td>
+                            <td><?php echo $appointment['status']; ?></td>
+                            <td>
+                                <a href="view_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="edit_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Edit</a>
+                                <a href="delete_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -24,7 +24,7 @@ session_start();
             <!-- Logo -->
             <a class="navbar-brand" href="index.php">
                 <img src="image/lo.jpg" alt="Logo"> 
-                 <span class="logo-text">The Atrium</span> 
+                 <span class="logo-text">The Atrium</span>
             </a>
 
             <!-- Navbar Toggler for Mobile -->

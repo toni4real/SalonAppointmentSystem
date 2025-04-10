@@ -9,25 +9,43 @@ if (!isset($_SESSION['customer_id'])) {
     exit();
 }
 
-// Fetch available staff and services
-$staffQuery = mysqli_query($conn, "SELECT staff_id, name FROM staff WHERE status = 'active'");
+// Fetch available services
 $serviceQuery = mysqli_query($conn, "SELECT service_id, service_name, price FROM services");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_id = $_SESSION['customer_id'];
-    $staff_id = $_POST['staff_id'];
     $service_id = $_POST['service_id'];
     $appointment_date = $_POST['appointment_date'];
     $appointment_time = $_POST['appointment_time'];
 
-    $insertQuery = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, 'pending')";
-    $stmt = mysqli_prepare($conn, $insertQuery);
-    mysqli_stmt_bind_param($stmt, 'iiiss', $customer_id, $staff_id, $service_id, $appointment_date, $appointment_time);
+    // Fetch an available staff for the given time and date
+    $staffQuery = mysqli_query($conn, "
+        SELECT s.staff_id, COUNT(a.appointment_id) AS appointment_count
+        FROM staff s
+        LEFT JOIN appointments a ON s.staff_id = a.staff_id 
+            AND a.appointment_date = '$appointment_date' AND a.appointment_time = '$appointment_time'
+        WHERE s.status = 'active'
+        GROUP BY s.staff_id
+        ORDER BY appointment_count ASC, RAND()
+        LIMIT 1
+    ");
 
-    if (mysqli_stmt_execute($stmt)) {
-        echo "Appointment booked successfully.";
+    $staff = mysqli_fetch_assoc($staffQuery);
+
+    if ($staff) {
+        $staff_id = $staff['staff_id'];
+
+        $insertQuery = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+        $stmt = mysqli_prepare($conn, $insertQuery);
+        mysqli_stmt_bind_param($stmt, 'iiiss', $customer_id, $staff_id, $service_id, $appointment_date, $appointment_time);
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "Appointment booked successfully.";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     } else {
-        echo "Error: " . mysqli_error($conn);
+        echo "No available staff at the selected time. Please choose a different time.";
     }
 }
 ?>
@@ -43,13 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <h2>Book an Appointment</h2>
 
     <form action="" method="POST">
-        <label for="staff_id">Select Staff:</label>
-        <select name="staff_id" required>
-            <?php while ($staff = mysqli_fetch_assoc($staffQuery)): ?>
-                <option value="<?php echo $staff['staff_id']; ?>"> <?php echo htmlspecialchars($staff['name']); ?> </option>
-            <?php endwhile; ?>
-        </select><br>
-
         <label for="service_id">Select Service:</label>
         <select name="service_id" required>
             <?php while ($service = mysqli_fetch_assoc($serviceQuery)): ?>

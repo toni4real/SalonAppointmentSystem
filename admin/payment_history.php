@@ -9,64 +9,72 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Fetch payment records with related appointment and customer data
-$query = "
-    SELECT p.payment_id, p.amount, p.payment_method, p.payment_date, p.proof_of_payment,
-           a.appointment_id, a.appointment_date, a.appointment_time,
-           c.name AS customer_name
-    FROM payments p
-    JOIN appointments a ON p.appointment_id = a.appointment_id
-    JOIN customers c ON a.customer_id = c.customer_id
-    ORDER BY p.payment_date DESC
-";
+// Fetch payment history from the database
+$query = "SELECT * FROM payments";
 $result = mysqli_query($conn, $query);
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>Payment History</title>
+    <meta charset="UTF-8">
+    <title>Payment History - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/payment_history.css">
 </head>
-
 <body>
-    <h2>Payment History</h2>
 
-    <a href="admin_dashboard.php">Back to Dashboard</a>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">Salon Admin Panel</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Back to Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_appointments.php">Manage Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="staff_schedule.php">Manage Staff Schedules</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_logout.php">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Payment ID</th>
-                <th>Customer</th>
-                <th>Appointment Date</th>
-                <th>Appointment Time</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>Payment Date</th>
-                <th>Proof of Payment</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                <tr>
-                    <td><?php echo $row['payment_id']; ?></td>
-                    <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
-                    <td><?php echo $row['appointment_date']; ?></td>
-                    <td><?php echo $row['appointment_time']; ?></td>
-                    <td><?php echo $row['amount']; ?></td>
-                    <td><?php echo $row['payment_method']; ?></td>
-                    <td><?php echo $row['payment_date']; ?></td>
-                    <td>
-                        <?php if ($row['proof_of_payment']): ?>
-                            <a href="uploads/<?php echo $row['proof_of_payment']; ?>" target="_blank">View Proof</a>
-                        <?php else: ?>
-                            No proof uploaded
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+    <div class="container payment-history-container">
+        <h2>Payment History</h2>
+        <div class="payment-history-table table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Customer Name</th>
+                        <th>Amount</th>
+                        <th>Payment Date</th>
+                        <th>Proof of Payment</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($payment = mysqli_fetch_assoc($result)) { ?>
+                        <tr>
+                            <td><?php echo $payment['payment_id']; ?></td>
+                            <td><?php echo $payment['customer_name']; ?></td>
+                            <td><?php echo '₱' . number_format($payment['amount'], 2); ?></td>
+                            <td><?php echo $payment['payment_date']; ?></td>
+                            <td>
+                                <?php if ($payment['proof_of_payment'] != '') { ?>
+                                    <a href="<?php echo $payment['proof_of_payment']; ?>" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                                <?php } else { ?>
+                                    <span>No proof uploaded</span>
+                                <?php } ?>
+                            </td>
+                            <td><?php echo $payment['status']; ?></td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </body>
-
 </html>
