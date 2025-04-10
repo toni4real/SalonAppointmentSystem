@@ -23,6 +23,20 @@ body {
     background-color: #9575cd;
 }
 
+.navbar .nav-item .btn-danger {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: bold;
+    background-color: #9575cd;
+    transition: background-color 0.3s ease;
+    margin-left: 20px;
+  }
+  
+  .navbar .nav-item .btn-danger:hover {
+    background-color: #d9534f; /* A darker red for hover effect */
+    color: #fff;
+  }
+
 .payment-history-container {
     margin-top: 50px;
 }

@@ -45,7 +45,11 @@ $pendingPayments = getCount("SELECT COUNT(*) as total FROM payments WHERE proof_
                     <li class="nav-item"><a class="nav-link" href="admin_appointments.php">Manage Appointments</a></li>
                     <li class="nav-item"><a class="nav-link" href="payment_history.php">View Payment Records</a></li>
                     <li class="nav-item"><a class="nav-link" href="staff_schedule.php">Manage Staff Schedules</a></li>
-                    <li class="nav-item"><a class="nav-link" href="admin_logout.php">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white" href="admin_logout.php">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

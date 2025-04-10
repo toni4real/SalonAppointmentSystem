@@ -34,7 +34,11 @@ $result = mysqli_query($conn, $query);
                     <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Back to Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="admin_appointments.php">Manage Appointments</a></li>
                     <li class="nav-item"><a class="nav-link" href="staff_schedule.php">Manage Staff Schedules</a></li>
-                    <li class="nav-item"><a class="nav-link" href="admin_logout.php">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white" href="admin_logout.php">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -58,6 +58,7 @@ $schedule_result = $schedule_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Staff Schedules</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/staff_schedule.css">
 </head>
 <body>
@@ -69,7 +70,11 @@ $schedule_result = $schedule_stmt->get_result();
                 <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Back to Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="admin_appointments.php">Manage Appointments</a></li>
                 <li class="nav-item"><a class="nav-link" href="payment_history.php">View Payment Records</a></li>
-                <li class="nav-item"><a class="nav-link" href="admin_logout.php">Logout</a></li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-danger text-white" href="admin_logout.php">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
