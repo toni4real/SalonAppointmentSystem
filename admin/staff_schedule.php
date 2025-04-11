@@ -3,6 +3,9 @@ session_start();
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
+// Determine current page for navbar highlighting
+$current_page = basename($_SERVER['PHP_SELF']);
+
 // Ensure only admins can access this page
 if (!isset($_SESSION['admin_id'])) {
     header('Location: admin_login.php');
@@ -67,9 +70,26 @@ $schedule_result = $schedule_stmt->get_result();
         <a class="navbar-brand fw-bold" href="#">Salon Admin Panel</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Back to Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="admin_appointments.php">Manage Appointments</a></li>
-                <li class="nav-item"><a class="nav-link" href="payment_history.php">View Payment Records</a></li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+                        <i class="bi bi-calendar-check"></i> Manage Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+                        <i class="bi bi-credit-card-2-front"></i> View Payment Records
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
+                        <i class="bi bi-person-gear"></i> Manage Staff Schedules
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link btn btn-danger text-white" href="admin_logout.php">
                         <i class="bi bi-box-arrow-right"></i> Logout
@@ -128,7 +148,7 @@ $schedule_result = $schedule_stmt->get_result();
                         </div>
 
                         <div class="modal-footer justify-content-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn">Add Schedule</button>
                         </div>
                     </form>
