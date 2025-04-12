@@ -41,17 +41,28 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Staff Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/staff_dashboard.css">
 </head>
 <body>
-
-<div class="navbar">STAFF PANEL</div>
-<div class="container">
-    <div class="navbar-container">
-        <div class="appointment">Appointments</div>
-        <button class="history"><a href="staff_history.php" class="text-decoration-none text-white">History</a></button>
-        <button class="logout"><a href="staff_logout.php" class="text-decoration-none text-white">Logout</a></button>
+<div class="dashboard-container">
+    <div class="navbar">
+        <div class="staffpanel">STAFF PANEL</div>
+        
+        <div class="navbarright">
+            <a href="staff_history.php">
+                <button class="viewhistory bi-clock-history"> View History</button>
+            </a>
+            <a href="staff_profile.php">
+                <button class="viewprofile bi-person-gear"> View Profile</button>
+            </a>
+            <a href="staff_logout.php">
+                <button class="logout bi-box-arrow-right" > Logout</button>
+            </a>
+        </div>
     </div>
+
+    <div class="appointment">Appointments</div>
 
     <div class="table-container">
         <div class="table-responsive">
@@ -75,7 +86,6 @@ $result = $stmt->get_result();
                             <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
                             <td><?php echo htmlspecialchars($appointment['status']); ?></td>
                             <td>
-                                <!-- You can add accept/reject buttons or links here -->
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -84,6 +94,5 @@ $result = $stmt->get_result();
         </div>
     </div>
 </div>
-
 </body>
 </html>

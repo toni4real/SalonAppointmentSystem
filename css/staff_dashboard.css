@@ -6,19 +6,12 @@
 body {
     background: #c5dbc5; /* Light pink background */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    
 }
 .dashboard-container {
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(255, 8, 8, 0.08);
-    margin-top: 2rem; /* Added margin to give some space from the top */
     opacity: 0;
     animation: fadeIn 1s forwards; /* Animation to fade in */
-
+    
+    
 }
 @keyframes fadeIn {
     to {
@@ -26,81 +19,106 @@ body {
     }
 }
 .navbar {
-    background-color: #78dd78;
-    height: 5rem;
+    background-color: #00b100;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    position: fixed;
-    
-    z-index: 1000;
-    color: white !important;
+    margin-top: -5px;
+    color: white;
     font-size: 1.5rem; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 750;
+    height: 60px;
+
+}
+.staffpanel{
+    width: 30%;
+    padding-left: 15px;
+    border: -10px;
+}
+.navbarright{
+    width: 70%;
+    display: flex;
+    justify-content: end;
+    margin-top: -3px;
     
+   
 }
-.navbar:hover {
-    background-color: #4be14b; /* Darker pink on hover */
+
+.viewprofile{
+    background-color: #00b100;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 17px;
+    font-weight: 400;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 100%;
+    margin-left: 20px;
 }
+
+.viewprofile:hover {
+    background-color: #007e00;
+}
+
+.logout{
+    background-color: #dc3545;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    margin-left: 30px;
+    margin-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 110%;
+
+}
+.logout:hover {
+    background-color:#c82333;
+}
+.viewhistory{
+    background-color: #00b100;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 17px;
+    font-weight: 400;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 100%;       
+}
+.viewhistory:hover {
+    background-color: #007e00;
+}
+
 .container{
     width: 80%; 
     background-color: white;
     
-    margin-top:6%;
+    
     border-radius: 10px;
 }
 .navbar-container{
     width: 100%;
     margin-top: 10px ;
     display: flex;
+    justify-content: center;
 }
 .appointment {
     font-weight: 750;
-    
-    font-size: 25px;
-}
-.history{
-    font-weight: 750;
-    background-color:#78dd78;
-    margin-left: 70%;
-    width: 8%;
-    border-radius: 5px;
-    border: none;
-    color: white;
-}
-.history:hover{
-    background-color: #4be14b;
+    color: #00b100;
+    font-size: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 
-.appointments{
-    font-weight: 750;
-    background-color:#78dd78;
-    margin-left: 1%;
-    width: 10%;
-    border-radius: 5px;
-    border: none;
-    color: white;
-}
-
-.appointments:hover{
-    background-color: #4be14b;
-}
-
-.logout{
-    font-weight: 750;
-    background-color:#78dd78;
-    margin-left: 1%;
-    width: 8%;
-    border-radius: 5px;
-    border: none;
-    color: white;
-}
-.logout:hover{
-    background-color: #4be14b;
-}
 .table-container {
     margin-top: 2rem;
     background:white;
@@ -109,27 +127,33 @@ body {
     box-shadow: 0 4px 10px rgba(0, 9, 2, 0.08);
     opacity: 0;
     animation: fadeIn 1s forwards; /* Animation to fade in */
-    margin-bottom: 15px;
+    margin-bottom: -15px;
+    margin-left:30px;
+    margin-right:30px;
+
 }
 
+
 .table th {
-    background-color: #78dd78; /* Bright pink background for header */
+    background-color: #00b100; /* Bright pink background for header */
     color: white; /* White text in table header */
     transition: background-color 0.3s ease; /* Smooth transition for header color */
+
 }
 
 .table th:hover {
-    background-color:#4be14b; /* Darker pink on hover */
+    background-color:#007e00; /* Darker pink on hover */
+
 }
 
 .table td {
-    background-color: #78dd78; /* Light pink for table cells */
+    background-color: #00b100; /* Light pink for table cells */
     color: #333; /* Darker text for readability */
     transition: background-color 0.3s ease; /* Smooth transition for row color */
 }
 
 .table tbody tr:hover {
-    background-color: #4be14b; /* Darker pink on hover */
+    background-color: #007e00; /* Darker pink on hover */
     transform: scale(1.02); /* Slightly enlarge row on hover */
     transition: transform 0.3s ease; /* Smooth scaling */
 }
