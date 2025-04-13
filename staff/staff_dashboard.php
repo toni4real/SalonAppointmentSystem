@@ -50,6 +50,10 @@ $result = $stmt->get_result();
         <div class="staffpanel">STAFF PANEL</div>
         
         <div class="navbarright">
+        <a href="staff_dashboard.php">
+                <button class="viewappointments bi-calendar-check"> Appointments</button>
+            </a>
+
             <a href="staff_history.php">
                 <button class="viewhistory bi-clock-history"> View History</button>
             </a>

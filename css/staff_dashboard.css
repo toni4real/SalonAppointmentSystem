@@ -19,7 +19,7 @@ body {
     }
 }
 .navbar {
-    background-color: #00b100;
+    background-color: #014421;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -47,7 +47,7 @@ body {
 }
 
 .viewprofile{
-    background-color: #00b100;
+    background-color: #014421;
     border: none;
     border-radius: 8px;
     color: white;
@@ -60,7 +60,7 @@ body {
 }
 
 .viewprofile:hover {
-    background-color: #007e00;
+    background-color: #013220;
 }
 
 .logout{
@@ -81,7 +81,23 @@ body {
     background-color:#c82333;
 }
 .viewhistory{
-    background-color: #00b100;
+    background-color: #014421;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 17px;
+    font-weight: 400;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 100%;    
+    margin-left: 20px;   
+}
+.viewhistory:hover {
+    background-color: #013220;
+}
+
+.viewappointments{
+    background-color: #014421;
     border: none;
     border-radius: 10px;
     color: white;
@@ -91,10 +107,9 @@ body {
     padding-right: 15px;
     height: 100%;       
 }
-.viewhistory:hover {
-    background-color: #007e00;
+.viewappointments:hover {
+    background-color: #013220;
 }
-
 .container{
     width: 80%; 
     background-color: white;
@@ -110,7 +125,7 @@ body {
 }
 .appointment {
     font-weight: 750;
-    color: #00b100;
+    color: #014421;
     font-size: 40px;
     width: 100%;
     display: flex;
@@ -135,14 +150,14 @@ body {
 
 
 .table th {
-    background-color: #00b100; /* Bright pink background for header */
+    background-color: #014421; /* Bright pink background for header */
     color: white; /* White text in table header */
     transition: background-color 0.3s ease; /* Smooth transition for header color */
 
 }
 
 .table th:hover {
-    background-color:#007e00; /* Darker pink on hover */
+    background-color:#013220; /* Darker pink on hover */
 
 }
 
