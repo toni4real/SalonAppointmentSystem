@@ -10,7 +10,7 @@ if (!isset($_SESSION['staff_id'])) {
 
 $staff_id = $_SESSION['staff_id'];
 
-// Get staff name (optional, if you want to show staff name on the page)
+// Get staff name
 $stmt = $conn->prepare("SELECT name FROM staff WHERE staff_id = ?");
 $stmt->bind_param("i", $staff_id);
 $stmt->execute();
@@ -18,18 +18,19 @@ $stmt->bind_result($staff_name);
 $stmt->fetch();
 $stmt->close();
 
-// Get past appointments (appointments with status not 'pending' or 'active')
+// Get past appointments (before today)
+$today = date('Y-m-d');
 $query = "
-    SELECT a.appointment_id, a.appointment_date, a.appointment_time, s.price, c.name AS customer_name, s.service_name
+    SELECT a.appointment_id, a.appointment_date, a.appointment_time, 
+           s.price, c.name AS customer_name, s.service_name
     FROM appointments a
     JOIN customers c ON a.customer_id = c.customer_id
     JOIN services s ON a.service_id = s.service_id
-    WHERE a.staff_id = ? AND a.status != 'pending' AND a.status != 'active'
-    ORDER BY a.appointment_date DESC
+    WHERE a.staff_id = ? AND a.appointment_date < ?
+    ORDER BY a.appointment_date DESC, a.appointment_time DESC
 ";
-
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $staff_id);
+$stmt->bind_param("is", $staff_id, $today);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -38,18 +39,32 @@ $result = $stmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Staff Appointment History</title>
+    <title>Appointment History</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/staff_dashboard.css">
 </head>
 <body>
-
-<div class="navbar">STAFF PANEL - Appointment History</div>
-<div class="container">
-    <div class="navbar-container">
-        <button class="appointments"><a href="staff_dashboard.php" class="text-decoration-none text-white">Appointments</a></button>
-        <button class="logout"><a href="staff_logout.php" class="text-decoration-none text-white">Logout</a></button>
+<div class="dashboard-container">
+    <div class="navbar">
+        <div class="staffpanel">STAFF PANEL</div>
+        <div class="navbarright">
+            <a href="staff_dashboard.php">
+                <button class="viewappointments bi-calendar-check"> Appointments</button>
+            </a>
+            <a href="staff_history.php">
+                <button class="viewhistory bi-clock-history"> View History</button>
+            </a>
+            <a href="staff_profile.php">
+                <button class="viewprofile bi-person-gear"> View Profile</button>
+            </a>
+            <a href="staff_logout.php">
+                <button class="logout bi-box-arrow-right"> Logout</button>
+            </a>
+        </div>
     </div>
+
+    <div class="appointment">Appointment History</div>
 
     <div class="table-container">
         <div class="table-responsive">
@@ -65,14 +80,14 @@ $result = $stmt->get_result();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($appointment = $result->fetch_assoc()): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($appointment['appointment_id']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['customer_name']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['price']); ?></td>
+                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
+                            <td><?php echo htmlspecialchars($row['customer_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['service_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                            <td>₱<?php echo number_format($row['price'], 2); ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -80,7 +95,8 @@ $result = $stmt->get_result();
         </div>
     </div>
 </div>
-
 </body>
 </html>
+
+
 
