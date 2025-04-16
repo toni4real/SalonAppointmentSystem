@@ -2,6 +2,8 @@ body {
   background-color: #f9f9f9;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  display: flex;
+  min-height: 100vh;
 }
 
 .sidebar {
@@ -56,7 +58,7 @@ body {
   width: calc(100% - 250px); /* Prevent overflow */
 }
 
-.dashboard {
+.profile-container {
   padding: 40px;
   display: flex;
   justify-content: center;
@@ -65,45 +67,28 @@ body {
   flex-direction: column;
 }
 
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+.profile-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
   margin-top: 30px;
 }
 
-.dashboard-cards .card {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  color: #333;
-  transition: ease 0.3s;
+.profile-card label {
+  font-weight: 500;
 }
 
-.dashboard-cards .card:hover {
-  transform: translateY(-5px);
-}
-
-.dashboard-cards .card i {
-  font-size: 2rem;
-  color: #6f42c1;
-  margin-bottom: 10px;
-}
-
-.card h5 {
-  color: #333;
-  margin-top: 7.5px;
-  margin-bottom: 15px;
-  font-size: 1.1rem;
+.profile-card .form-control {
+  border-radius: 0.375rem;
 }
 
 .btn {
   border-radius: 20px;
   padding: 8px 20px;
   font-weight: bold;
-  background-color: #a78bfa;
+  background-color: #6f42c1;
   color: #fff;
   transition: background-color 0.3s ease;
   border: none;
@@ -111,6 +96,16 @@ body {
 }
 
 .btn:hover {
-  background-color: #9575cd;
+  background-color: #6e42c170;
   color: #fff;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: #fff;
+  margin: 4px;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
 }
