@@ -45,6 +45,17 @@ $schedule_stmt = $conn->prepare("
 ");
 $schedule_stmt->execute();
 $schedule_result = $schedule_stmt->get_result();
+
+$admin_id = $_SESSION['admin_id'];
+
+// Get admin's name
+$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$adminData = $result->fetch_assoc();
+
+$firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first word of the name
 ?>
 
 <!DOCTYPE html>
@@ -60,12 +71,12 @@ $schedule_result = $schedule_stmt->get_result();
 <body>
 
 <div class="sidebar d-flex flex-column">
-    <h4 class="text-white mb-4">Salon Admin</h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
-        <i class="bi bi-person-circle"></i> Profile
-    </a>
+    <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
     <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+        <i class="bi bi-person-circle"></i> Profile
     </a>
     <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments

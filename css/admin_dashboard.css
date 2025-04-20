@@ -4,6 +4,24 @@ body {
   color: #333;
 }
 
+.wave {
+  display: inline-block;
+  animation: wave-animation 2s infinite;
+  transform-origin: 70% 70%;
+  font-size: 1.5em;
+}
+
+@keyframes wave-animation {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
 .sidebar {
   width: 250px;
   background-color: #343a40;
@@ -40,8 +58,7 @@ body {
   background-color: #dc3545;
   border-radius: 20px;
   padding: 8px 20px;
-  font-weight: bold;
-  margin-top: auto;
+  margin: 250px 0 10px 0;
   text-align: left;
   transition: background-color 0.3s ease;
 }
@@ -97,20 +114,4 @@ body {
   margin-top: 7.5px;
   margin-bottom: 15px;
   font-size: 1.1rem;
-}
-
-.btn {
-  border-radius: 20px;
-  padding: 8px 20px;
-  font-weight: bold;
-  background-color: #a78bfa;
-  color: #fff;
-  transition: background-color 0.3s ease;
-  border: none;
-  margin: 4px;
-}
-
-.btn:hover {
-  background-color: #9575cd;
-  color: #fff;
 }
