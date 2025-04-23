@@ -111,6 +111,30 @@ body {
   color: white;
 }
 
+.edit-btn {
+  background-color:#6f42c1;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color:#612cc2;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+td .btn {
+  margin-top: 0;
+}
+
 .modal-content {
   border-radius: 10px;
 }

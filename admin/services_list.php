@@ -77,7 +77,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <!-- Main Content -->
     <div class="main-content">
-        <h2>Salon Services</h2>
+        <h2>Manage Services</h2>
 
         <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addServiceModal">
             <i class="bi bi-plus-circle"></i> Add Service
@@ -93,8 +93,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <p><?= htmlspecialchars($service['description']); ?></p>
                             <p><strong>Price:</strong> <?= htmlspecialchars($service['price']); ?></p>
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editModal<?= $service['service_id']; ?>">Edit</button>
-                                <button class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $service['service_id']; ?>">Delete</button>
+                                <button class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editModal<?= $service['service_id']; ?>">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </button>
+                                <button class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $service['service_id']; ?>">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -111,25 +115,25 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <div class="modal-body">
                                 <input type="hidden" name="id" value="<?= $service['service_id']; ?>">
                                 <div class="mb-3">
-                                    <label class="form-label">Name</label>
+                                    <label class="form-label">Name:</label>
                                     <input type="text" class="form-control" name="name" value="<?= $service['service_name']; ?>" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Description</label>
+                                    <label class="form-label">Description:</label>
                                     <textarea class="form-control" name="description" required><?= $service['description']; ?></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Price</label>
+                                    <label class="form-label">Price:</label>
                                     <input type="text" class="form-control" name="price" value="<?= $service['price']; ?>" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Image (optional)</label>
+                                    <label class="form-label">Image (optional):</label>
                                     <input type="file" class="form-control" name="image">
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <button type="submit" class="btn">Update Service</button>
                                 <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn">Update</button>
                             </div>
                         </form>
                     </div>
@@ -148,8 +152,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 <p>Are you sure you want to delete "<strong><?= $service['service_name']; ?></strong>"?</p>
                             </div>
                             <div class="modal-footer">
-                        <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn delete-btn">Delete</button>
+                                <button type="submit" class="btn delete-btn">Yes</button>
+                                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">No</butto>
                             </div>
                         </form>
                     </div>
@@ -169,25 +173,25 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Name</label>
+                    <label class="form-label">Name:</label>
                     <input type="text" class="form-control" name="name" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Description:</label>
                     <textarea class="form-control" name="description" required></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Price</label>
+                    <label class="form-label">Price:</label>
                     <input type="text" class="form-control" name="price" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Image</label>
+                    <label class="form-label">Image:</label>
                     <input type="file" class="form-control" name="image" required>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn">Add Service</button>
+                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
             </div>
         </form>
     </div>

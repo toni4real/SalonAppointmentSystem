@@ -105,7 +105,7 @@ body {
   background-color: #6f42c1;
   color: white;
   transition: background-color 0.3s ease;
-  margin: 0 0 0 6px;
+  margin: 0 6px 0 0;
 }
 
 .btn:hover {
@@ -116,7 +116,7 @@ body {
 .cancel-btn {
   background-color: #6c757d;
   color: white;
-  margin: 0 6px 0 0;
+  margin: 0 0 0 6px;
 }
 
 .cancel-btn:hover {
