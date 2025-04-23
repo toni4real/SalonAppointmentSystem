@@ -36,7 +36,7 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     <title>Payment History</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/payment_history.css">
+    <link rel="stylesheet" href="../admin/css/payment_history.css">
 </head>
 <body>
 
@@ -56,6 +56,9 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     </a>
     <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
         <i class="bi bi-person-gear"></i> Staff Schedules
+    </a>
+    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+        <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout

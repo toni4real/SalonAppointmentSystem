@@ -97,7 +97,8 @@ body {
 }
 
 .btn:hover {
-  background-color: #6e42c170;
+  background-color: #612cc2;
+  color: white;
 }
 
 .cancel-btn {
@@ -107,6 +108,7 @@ body {
 
 .cancel-btn:hover {
   background-color: #5a6268;
+  color: white;
 }
 
 .modal-content {

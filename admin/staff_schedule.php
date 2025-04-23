@@ -66,7 +66,7 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     <title>Manage Staff Schedules</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/staff_schedule.css">
+    <link rel="stylesheet" href="../admin/css/staff_schedule.css">
 </head>
 <body>
 
@@ -87,6 +87,9 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
         <i class="bi bi-person-gear"></i> Staff Schedules
     </a>
+    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+        <i class="bi bi-stars"></i> Services
+    </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>
@@ -100,7 +103,7 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     <?php endif; ?>
 
     <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
-        Add Schedule
+        <i class="bi bi-plus-circle"></i> Add Schedule
     </button>
 
     <!-- Modal -->
@@ -109,8 +112,8 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
             <div class="modal-content">
                 <form method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addScheduleModalLabel">Add Schedule</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="addScheduleModalLabel">Add New Schedule</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">

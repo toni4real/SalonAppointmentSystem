@@ -103,21 +103,23 @@ body {
   border-radius: 6px;
   padding: 8px 20px;
   background-color: #6f42c1;
-  color: #fff;
+  color: white;
   transition: background-color 0.3s ease;
   margin: 0 0 0 6px;
 }
 
 .btn:hover {
-  background-color: #6e42c170;
+  background-color: #612cc2;
+  color: white;
 }
 
 .cancel-btn {
   background-color: #6c757d;
-  color: #fff;
+  color: white;
   margin: 0 6px 0 0;
 }
 
 .cancel-btn:hover {
   background-color: #5a6268;
+  color: white;
 }
