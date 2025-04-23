@@ -45,118 +45,152 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
     <title>Upload Payment Proof</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-               body {
-            font-family: Arial, sans-serif;
-            background-color: #F6DEF6;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f77fbe;
+            height: 100vh;
+            position: fixed;
+            padding: 20px 0;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+            padding: 12px 20px;
+            width: 100%;
+            text-align: left;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .sidebar .btn-danger {
+            margin-top: auto;
+            margin-bottom: 20px;
+            width: 80%;
+            border-radius: 20px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: 100%;
         }
 
         h2 {
-            text-align: center;
             color: #f77fbe;
-            margin-top: 30px;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .container {
-            width: 50%;
-            margin: 0 auto;
-            padding: 20px;
+        .form-container {
             background-color: white;
+            padding: 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #f77fbe;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
         }
 
         label {
             font-weight: bold;
-            color: #333;
+            margin-top: 15px;
         }
 
         select,
         input[type="file"] {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #f9f9f9;
+            margin-top: 5px;
+            margin-bottom: 20px;
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
             background-color: #f77fbe;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 0.375rem;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #d66ca6;
+            background-color: #e063a3;
         }
 
         p {
             text-align: center;
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .form-container {
-            margin-top: 20px;
+            color: #dc3545;
         }
     </style>
 </head>
-
 <body>
-<h2>Upload Payment Proof</h2>
-    <div class="container">
-        <a href="customer_dashboard.php">Back to Dashboard</a>
 
-        <div class="form-container">
-            <?php if ($appointments->num_rows > 0): ?>
-                <form method="POST" action="" enctype="multipart/form-data">
-                    <label for="appointment_id">Select Appointment:</label>
-                    <select name="appointment_id" required>
-                        <?php while ($row = $appointments->fetch_assoc()): ?>
-                            <option value="<?php echo $row['appointment_id']; ?>">
-                                <?php echo $row['appointment_date'] . ' ' . $row['appointment_time']; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
+<div class="sidebar">
+    <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
+    <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
+    <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
+    <a class="nav-link active" href="upload_payment_proof.php"><i class="bi bi-upload"></i> Upload Payment Proof</a>
+    <a class="nav-link" href="appointment_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
+    <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
+    <a class="nav-link" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
+    <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
+</div>
 
-                    <label for="proof">Upload Proof (Image/PDF):</label>
-                    <input type="file" name="proof" accept="image/*,application/pdf" required>
+<div class="main-content">
+    <h2>Upload Payment Proof</h2>
+    <div class="form-container">
+        <?php
+        // Sample logic - assumes $appointments is available
+        if (isset($appointments) && $appointments->num_rows > 0): ?>
+            <form method="POST" action="" enctype="multipart/form-data">
+                <label for="appointment_id">Select Appointment:</label>
+                <select class="form-select" name="appointment_id" required>
+                    <?php while ($row = $appointments->fetch_assoc()): ?>
+                        <option value="<?php echo $row['appointment_id']; ?>">
+                            <?php echo $row['appointment_date'] . ' ' . $row['appointment_time']; ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
 
+                <label for="proof">Upload Proof (Image/PDF):</label>
+                <input type="file" class="form-control" name="proof" accept="image/*,application/pdf" required>
+
+                <div class="text-center mt-4">
                     <button type="submit">Upload Proof</button>
-                </form>
-            <?php else: ?>
-                <p>No pending payments to upload proof for.</p>
-            <?php endif; ?>
-        </div>
+                </div>
+            </form>
+        <?php else: ?>
+            <p>No pending payments to upload proof for.</p>
+        <?php endif; ?>
     </div>
-</body>
+</div>
 
+</body>
 </html>

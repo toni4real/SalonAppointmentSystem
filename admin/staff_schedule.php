@@ -45,6 +45,17 @@ $schedule_stmt = $conn->prepare("
 ");
 $schedule_stmt->execute();
 $schedule_result = $schedule_stmt->get_result();
+
+$admin_id = $_SESSION['admin_id'];
+
+// Get admin's name
+$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$adminData = $result->fetch_assoc();
+
+$firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first word of the name
 ?>
 
 <!DOCTYPE html>
@@ -55,17 +66,17 @@ $schedule_result = $schedule_stmt->get_result();
     <title>Manage Staff Schedules</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/staff_schedule.css">
+    <link rel="stylesheet" href="../admin/css/staff_schedule.css">
 </head>
 <body>
 
 <div class="sidebar d-flex flex-column">
-    <h4 class="text-white mb-4">Salon Admin</h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
-        <i class="bi bi-person-circle"></i> Profile
-    </a>
+    <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
     <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+        <i class="bi bi-person-circle"></i> Profile
     </a>
     <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
@@ -75,6 +86,9 @@ $schedule_result = $schedule_stmt->get_result();
     </a>
     <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
         <i class="bi bi-person-gear"></i> Staff Schedules
+    </a>
+    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+        <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
@@ -89,7 +103,7 @@ $schedule_result = $schedule_stmt->get_result();
     <?php endif; ?>
 
     <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
-        Add Schedule
+        <i class="bi bi-plus-circle"></i> Add Schedule
     </button>
 
     <!-- Modal -->
@@ -98,8 +112,8 @@ $schedule_result = $schedule_stmt->get_result();
             <div class="modal-content">
                 <form method="POST">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addScheduleModalLabel">Add Schedule</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="addScheduleModalLabel">Add New Schedule</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">

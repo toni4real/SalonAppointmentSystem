@@ -4,6 +4,24 @@ body {
   color: #333;
 }
 
+.wave {
+  display: inline-block;
+  animation: wave-animation 2s infinite;
+  transform-origin: 70% 70%;
+  font-size: 1.5em;
+}
+
+@keyframes wave-animation {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
 .sidebar {
   width: 250px;
   background-color: #343a40;
@@ -40,8 +58,7 @@ body {
   background-color: #dc3545;
   border-radius: 20px;
   padding: 8px 20px;
-  font-weight: bold;
-  margin-top: auto;
+  margin: 250px 0 10px 0;
   text-align: left;
   transition: background-color 0.3s ease;
 }
@@ -56,61 +73,22 @@ body {
   width: calc(100% - 250px); /* Prevent overflow */
 }
 
-.dashboard {
-  padding: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+.payment-history-table {
   margin-top: 30px;
 }
 
-.dashboard-cards .card {
+.table-responsive {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  text-align: center;
+  border-radius: 8px;
+  padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  color: #333;
-  transition: ease 0.3s;
 }
 
-.dashboard-cards .card:hover {
-  transform: translateY(-5px);
+.btn-outline-primary {
+  margin-right: 5px;
 }
 
-.dashboard-cards .card i {
-  font-size: 2rem;
-  color: #6f42c1;
-  margin-bottom: 10px;
-}
-
-.card h5 {
-  color: #333;
-  margin-top: 7.5px;
-  margin-bottom: 15px;
-  font-size: 1.1rem;
-}
-
-.btn {
-  border-radius: 20px;
-  padding: 8px 20px;
-  font-weight: bold;
+.btn-outline-primary:hover {
   background-color: #a78bfa;
-  color: #fff;
-  transition: background-color 0.3s ease;
-  border: none;
-  margin: 4px;
-}
-
-.btn:hover {
-  background-color: #9575cd;
-  color: #fff;
+  color: white;
 }
