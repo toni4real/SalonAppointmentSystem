@@ -39,10 +39,10 @@ $result = $stmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Staff Dashboard</title>
+    <title>Staff Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/staff_dashboard1.css">
+    <link rel="stylesheet" href="../css/staff_profile.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -64,38 +64,49 @@ $result = $stmt->get_result();
             </div>
         
         <div class="main-content">
-            <div class="appointment">Appointments</div>
-            <div class="table-container">
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle text-center">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Customer</th>
-                                    <th>Service</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                    <th>Accept/Reject</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while ($appointment = $result->fetch_assoc()): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($appointment['customer_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
-                                        <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
-                                        <td><?php echo htmlspecialchars($appointment['status']); ?></td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-      
-        </div>
+      <div class="staffprofile">Staff Profile</div>
+
+      <div class="profile-card">
+        <?php if (isset($success)): ?>
+          <div class="alert alert-success"><?= $success ?></div>
+        <?php elseif (isset($error)): ?>
+          <div class="alert alert-danger"><?= $error ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" value="<?= htmlspecialchars($admin['name']) ?>" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <input type="text" class="form-control" name="role" value="<?= htmlspecialchars($admin['email']) ?>" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Phone Number</label>
+            <input type="number" class="form-control" name="email" value="<?= htmlspecialchars($admin['email']) ?>" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($admin['email']) ?>" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="new_password" class="form-label">Password <small class="text-muted">(leave blank to keep current)</small></label>
+            <input type="password" class="form-control" name="new_password">
+          </div>
+
+
+          <div class="d-flex justify-content-end">
+            <a href="admin_dashboard.php" class="btn cancel-btn">Cancel</a>
+            <button type="submit" class="btn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
         
 
