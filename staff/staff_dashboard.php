@@ -10,19 +10,21 @@ if (!isset($_SESSION['staff_id'])) {
 
 $staff_id = $_SESSION['staff_id'];
 
-// Get staff name
-$stmt = $conn->prepare("SELECT name FROM staff WHERE staff_id = ?");
+// Get staff first and last name
+$stmt = $conn->prepare("SELECT first_name, last_name FROM staff WHERE staff_id = ?");
 $stmt->bind_param("i", $staff_id);
 $stmt->execute();
-$stmt->bind_result($staff_name);
+$stmt->bind_result($first_name, $last_name);
 $stmt->fetch();
+$staff_name = $first_name . ' ' . $last_name;
 $stmt->close();
 
 // Get today's appointments
 $today = date('Y-m-d');
 $query = "
     SELECT a.appointment_id, a.appointment_date, a.appointment_time, a.status,
-           c.name AS customer_name, s.service_name
+           CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+           s.service_name
     FROM appointments a
     JOIN customers c ON a.customer_id = c.customer_id
     JOIN services s ON a.service_id = s.service_id
@@ -34,6 +36,8 @@ $stmt->bind_param("is", $staff_id, $today);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
