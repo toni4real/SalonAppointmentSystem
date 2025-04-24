@@ -33,7 +33,7 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
 $customerCount = getCount("SELECT COUNT(*) as total FROM customers");
 $staffCount = getCount("SELECT COUNT(*) as total FROM staff");
 $appointmentCount = getCount("SELECT COUNT(*) as total FROM appointments");
-$pendingPayments = getCount("SELECT COUNT(*) as total FROM payments WHERE proof_of_payment = ''");
+$pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE payment_status = 'pending'");
 ?>
 
 <!DOCTYPE html>

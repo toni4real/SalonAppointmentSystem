@@ -3,29 +3,63 @@ session_start();
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
-// Determine current page for navbar highlighting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Ensure only admins can access this page
 if (!isset($_SESSION['admin_id'])) {
     header('Location: admin_login.php');
     exit();
 }
 
-// Fetch payment history from the database
-$query = "SELECT * FROM payments";
+// Handle manual payment confirmation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
+    $paymentId = $_POST['mark_paid_id'];
+
+    // Get the corresponding appointment ID from payments table
+    $stmt = $conn->prepare("SELECT appointment_id FROM payments WHERE payment_id = ?");
+    $stmt->bind_param("i", $paymentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    if ($row) {
+        $appointmentId = $row['appointment_id'];
+
+        // Update the payment_status in appointments table
+        $updateStmt = $conn->prepare("UPDATE appointments SET payment_status = 'Paid' WHERE appointment_id = ?");
+        $updateStmt->bind_param("i", $appointmentId);
+        if ($updateStmt->execute()) {
+            $_SESSION['message'] = "Payment marked as paid successfully.";
+            header("Location: payment_history.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Failed to mark payment as paid.";
+        }
+    } else {
+        $_SESSION['error'] = "Appointment not found for this payment.";
+    }
+}
+
+// Fetch payment history
+$query = "SELECT p.*, c.first_name, c.last_name, a.payment_status
+          FROM payments p
+          JOIN appointments a ON p.appointment_id = a.appointment_id
+          JOIN customers c ON a.customer_id = c.customer_id";
 $result = mysqli_query($conn, $query);
 
-$admin_id = $_SESSION['admin_id'];
+if (!$result) {
+    die('Query failed: ' . mysqli_error($conn));
+}
 
-// Get admin's name
+$admin_id = $_SESSION['admin_id'];
 $stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
 $stmt->bind_param("i", $admin_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$adminData = $result->fetch_assoc();
-
-$firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first word of the name
+$result_admin = $stmt->get_result();
+$adminData = $result_admin->fetch_assoc();
+$firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_name'])[0] : 'Admin';
 ?>
 
 <!DOCTYPE html>
@@ -42,22 +76,22 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
 
 <div class="sidebar d-flex flex-column">
     <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
+    <a class="nav-link <?= ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
         <i class="bi bi-person-gear"></i> Staff Schedules
     </a>
-    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
@@ -65,41 +99,61 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     </a>
 </div>
 
-    <!-- Content Area -->
-    <div class="main-content">
-        <h2>Payment History</h2>
-        <div class="payment-history-table table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Payment ID</th>
-                        <th>Customer Name</th>
-                        <th>Amount</th>
-                        <th>Payment Date</th>
-                        <th>Proof of Payment</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($payment = mysqli_fetch_assoc($result)) { ?>
+<div class="main-content">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+    <?php endif; ?>
+
+    <h2>Payment History</h2>
+    <div class="payment-history-table table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Customer Name</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (mysqli_num_rows($result) > 0): ?>
+                    <?php while ($payment = mysqli_fetch_assoc($result)): ?>
                         <tr>
-                            <td><?php echo $payment['payment_id']; ?></td>
-                            <td><?php echo $payment['customer_name']; ?></td>
-                            <td><?php echo '₱' . number_format($payment['amount'], 2); ?></td>
-                            <td><?php echo $payment['payment_date']; ?></td>
+                            <td><?= $payment['payment_id']; ?></td>
+                            <td><?= htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></td>
+                            <td><?= '₱' . number_format($payment['amount'], 2); ?></td>
+                            <td><?= $payment['payment_date']; ?></td>
+                            <td><?= $payment['payment_status']; ?></td>
                             <td>
-                                <?php if ($payment['proof_of_payment'] != '') { ?>
-                                    <a href="<?php echo $payment['proof_of_payment']; ?>" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
-                                <?php } else { ?>
-                                    <span>No proof uploaded</span>
-                                <?php } ?>
+                                <?php if ($payment['payment_status'] === 'Unpaid'): ?>
+                                    <form method="POST" class="d-inline">
+                                        <input type="hidden" name="mark_paid_id" value="<?= $payment['payment_id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-success">Mark as Paid</button>
+                                    </form>
+                                <?php else: ?>
+                                    <span class="text-success">Confirmed</span>
+                                <?php endif; ?>
                             </td>
-                            <td><?php echo $payment['status']; ?></td>
+                            <td>
+                                <?php if ($payment['payment_status'] === 'Paid'): ?>
+                                    <a href="generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-outline-info">Generate Receipt</a>
+                                <?php else: ?>
+                                    <span>-</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr><td colspan="7">No payment records found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 

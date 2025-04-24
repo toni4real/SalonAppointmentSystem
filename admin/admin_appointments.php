@@ -3,29 +3,44 @@ session_start();
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
-// Determine current page for navbar highlighting
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Ensure only admins can access this page
 if (!isset($_SESSION['admin_id'])) {
     header('Location: admin_login.php');
     exit();
 }
 
-// Fetch appointments from the database
-$query = "SELECT * FROM appointments";
+// Query to fetch appointments and related data
+$query = "
+    SELECT 
+        a.*, 
+        c.first_name, 
+        c.last_name, 
+        s.service_name 
+    FROM appointments a
+    JOIN customers c ON a.customer_id = c.customer_id
+    JOIN services s ON a.service_id = s.service_id
+";
 $result = mysqli_query($conn, $query);
+
+// Check if query was successful
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
+}
 
 $admin_id = $_SESSION['admin_id'];
 
-// Get admin's name
 $stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
 $stmt->bind_param("i", $admin_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$adminData = $result->fetch_assoc();
+$result_admin = $stmt->get_result();
+$adminData = $result_admin->fetch_assoc();
 
-$firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first word of the name
+if ($adminData) {
+    $firstName = explode(' ', $adminData['first_name'])[0];
+} else {
+    $firstName = "Admin";
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,22 +57,22 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
 
 <div class="sidebar d-flex flex-column">
     <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
+    <a class="nav-link <?= ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
         <i class="bi bi-person-gear"></i> Staff Schedules
     </a>
-    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
@@ -65,41 +80,52 @@ $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first wo
     </a>
 </div>
 
-    <!-- Content Area -->
-    <div class="main-content">
-        <h2>Manage Appointments</h2>
+<div class="main-content">
 
-        <div class="appointments-table table-responsive">
-            <table class="table table-striped">
-                <thead>
+<?php if (isset($_SESSION['message'])): ?>
+    <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+<?php endif; ?>
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+<?php endif; ?>
+
+    <h2>Manage Appointments</h2>
+
+    <div class="appointments-table table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Appointment ID</th>
+                    <th>Customer Name</th>
+                    <th>Service</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($appointment = mysqli_fetch_assoc($result)) { ?>
                     <tr>
-                        <th>Appointment ID</th>
-                        <th>Customer Name</th>
-                        <th>Service</th>
-                        <th>Date & Time</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <td><?= htmlspecialchars($appointment['appointment_id']); ?></td>
+                        <td><?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?></td>
+                        <td><?= htmlspecialchars($appointment['service_name']); ?></td>
+                        <td><?= htmlspecialchars($appointment['appointment_date'] . ' ' . $appointment['appointment_time']); ?></td>
+                        <td><?= htmlspecialchars($appointment['status']); ?></td>
+                        <td>
+                            <a href="view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-primary">View</a>
+                            <?php if ($appointment['status'] === 'Pending') { ?>
+                                <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Confirm</a>
+                            <?php } ?>
+                            <?php if ($appointment['status'] === 'Confirmed') { ?>
+                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-secondary">Complete</a>
+                            <?php } ?>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php while ($appointment = mysqli_fetch_assoc($result)) { ?>
-                        <tr>
-                            <td><?php echo $appointment['appointment_id']; ?></td>
-                            <td><?php echo $appointment['customer_name']; ?></td>
-                            <td><?php echo $appointment['service']; ?></td>
-                            <td><?php echo $appointment['appointment_date']; ?> <?php echo $appointment['appointment_time']; ?></td>
-                            <td><?php echo $appointment['status']; ?></td>
-                            <td>
-                                <a href="view_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-primary">View</a>
-                                <a href="edit_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Edit</a>
-                                <a href="delete_appointment.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </div>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
+</div>
 
 </body>
 </html>
