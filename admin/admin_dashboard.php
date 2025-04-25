@@ -62,8 +62,8 @@ $pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE pa
     <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
-        <i class="bi bi-person-gear"></i> Staff Schedules
+    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-gear"></i> Staff Attendance
     </a>
     <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services

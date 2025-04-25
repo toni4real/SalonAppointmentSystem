@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila'); // <-- Set to your local timezone
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
@@ -88,8 +89,8 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?= ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
-        <i class="bi bi-person-gear"></i> Staff Schedules
+    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-gear"></i> Staff Attendance
     </a>
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
@@ -128,7 +129,7 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
                             <td><?= $payment['payment_id']; ?></td>
                             <td><?= htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></td>
                             <td><?= '₱' . number_format($payment['amount'], 2); ?></td>
-                            <td><?= $payment['payment_date']; ?></td>
+                            <td><?= date('F j, Y', strtotime($payment['payment_date'])); ?></td> <!-- Date format updated -->
                             <td><?= $payment['payment_status']; ?></td>
                             <td>
                                 <?php if ($payment['payment_status'] === 'Unpaid'): ?>
@@ -142,7 +143,7 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
                             </td>
                             <td>
                                 <?php if ($payment['payment_status'] === 'Paid'): ?>
-                                    <a href="generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-outline-info">Generate Receipt</a>
+                                    <a href="generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-outline-primary">Generate Receipt</a>
                                 <?php else: ?>
                                     <span>-</span>
                                 <?php endif; ?>

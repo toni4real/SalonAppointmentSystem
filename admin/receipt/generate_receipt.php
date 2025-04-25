@@ -1,6 +1,8 @@
 <?php
-require('fpdf.php');  // Include FPDF library
-require_once '../includes/db_connection.php'; // Include DB connection
+session_start();
+date_default_timezone_set('Asia/Manila');
+require_once '../includes/db_connection.php';
+require_once '../includes/auth.php';
 
 // Fetch the payment details based on payment ID (or appointment ID)
 if (isset($_GET['payment_id'])) {

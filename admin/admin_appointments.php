@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila'); // <-- Set to your local timezone
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
@@ -69,8 +70,8 @@ if ($adminData) {
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?= ($current_page == 'staff_schedule.php') ? 'active' : ''; ?>" href="staff_schedule.php">
-        <i class="bi bi-person-gear"></i> Staff Schedules
+    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-gear"></i> Staff Attendance
     </a>
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
@@ -104,12 +105,15 @@ if ($adminData) {
                 </tr>
             </thead>
             <tbody>
-                <?php while ($appointment = mysqli_fetch_assoc($result)) { ?>
+                <?php while ($appointment = mysqli_fetch_assoc($result)) { 
+                    $appointmentDate = new DateTime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
+                    $appointmentDateFormatted = $appointmentDate->format('F j, Y g:i A'); // Format: Month Day, Year Hour:Minute AM/PM
+                ?>
                     <tr>
                         <td><?= htmlspecialchars($appointment['appointment_id']); ?></td>
                         <td><?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?></td>
                         <td><?= htmlspecialchars($appointment['service_name']); ?></td>
-                        <td><?= htmlspecialchars($appointment['appointment_date'] . ' ' . $appointment['appointment_time']); ?></td>
+                        <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>
                         <td><?= htmlspecialchars($appointment['status']); ?></td>
                         <td>
                             <a href="view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-primary">View</a>
@@ -117,7 +121,7 @@ if ($adminData) {
                                 <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Confirm</a>
                             <?php } ?>
                             <?php if ($appointment['status'] === 'Confirmed') { ?>
-                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-secondary">Complete</a>
+                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="complete-btn btn-sm">Complete</a>
                             <?php } ?>
                         </td>
                     </tr>

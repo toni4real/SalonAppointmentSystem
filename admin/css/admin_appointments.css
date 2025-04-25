@@ -89,6 +89,15 @@ body {
 }
 
 .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-danger:hover {
-  background-color: #a78bfa;
+  color: white;
+}
+
+.complete-btn {
+  background-color: #612cc2;
+  color: white;
+}
+
+.complete-btn:hover {
+  background-color: #612cc2;
   color: white;
 }
