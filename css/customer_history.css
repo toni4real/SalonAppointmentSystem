@@ -48,11 +48,37 @@ body {
     margin-left: 250px;
     padding: 40px;
     
-    display: flex;
     
+
     justify-content: center;
     background-color: #f8f9fa;
     width: 100%;
+    
+}
+.welcome-message h2 {
+    color: #f77fbe;
+    font-weight: bold;
 }
 
+.table-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background-color: #f77fbe;
+    color: white;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+}
+h4 {
+    color: #f77fbe;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 
