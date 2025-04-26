@@ -85,16 +85,30 @@ body {
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .btn {
+    border-radius: 6px;
+    padding: 8px 20px;
     background-color: #6f42c1;
     color: white;
+    transition: background-color 0.3s ease;
   }
   
   .btn:hover {
     background-color: #612cc2;
     color: white;
   }
+  
+  .attendance-btn {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .attendance-btn:hover {
+    background-color: #5a6268;
+    color: white;
+  }
+  
 
   
   

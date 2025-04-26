@@ -1,10 +1,11 @@
 <?php
+session_start();
 require_once '../../includes/db_connection.php';
 require_once '../../includes/auth.php';
 require('../../fpdf/fpdf.php');
 
 date_default_timezone_set('Asia/Manila');
-$attendance_date = $_GET['date'] ?? date('F j, Y');
+$attendance_date = $_GET['date'] ?? date('Y-m-d');
 
 $query = "
     SELECT s.first_name, s.last_name, sa.status
@@ -28,7 +29,8 @@ $pdf->AddPage();
 $pdf->SetFont('Arial','B',16);
 $pdf->Cell(0,10,'Salon Staff Attendance Sheet',0,1,'C');
 $pdf->SetFont('Arial','',12);
-$pdf->Cell(0,10,'Date: ' . $attendance_date,0,1,'C');
+$display_date = date('F j, Y', strtotime($attendance_date));
+$pdf->Cell(0,10,'Date: ' . $display_date,0,1,'C');
 $pdf->Ln(5);
 
 // Table Header

@@ -84,20 +84,10 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.btn-outline-primary, .btn-outline-success, .btn-outline-danger {
+.btn-outline-primary, .btn-outline-success, .btn-success {
   margin-right: 5px;
 }
 
-.btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-danger:hover {
-  color: white;
-}
-
-.complete-btn {
-  background-color: #612cc2;
-  color: white;
-}
-
-.complete-btn:hover {
-  background-color: #612cc2;
+.btn-outline-primary:hover, .btn-outline-success:hover, .btn-success:hover {
   color: white;
 }

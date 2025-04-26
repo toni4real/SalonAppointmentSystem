@@ -121,7 +121,7 @@ if ($adminData) {
                                 <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Confirm</a>
                             <?php } ?>
                             <?php if ($appointment['status'] === 'Confirmed') { ?>
-                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="complete-btn btn-sm">Complete</a>
+                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-success">Complete</a>
                             <?php } ?>
                         </td>
                     </tr>

@@ -1,13 +1,15 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Manila');
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
+
+date_default_timezone_set('Asia/Manila');
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
 $firstName = $_SESSION['admin_first_name'] ?? 'Admin';
-$today = date('F j, Y');
+$today = date('F j, Y');       // Display on page (ex: April 25, 2025)
+$today_db = date('Y-m-d');      // Pass in URL (ex: 2025-04-25)
 
 // Fetch active staff
 $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM staff WHERE status = 'active'");
@@ -90,7 +92,7 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
 
         <?php if (isset($_GET['saved']) && $_GET['saved'] === '1') : ?>
         <div class="text-center mt-3">
-            <a href="attendance/generate_attendance.php?date=<?= $today ?>" class="btn btn-success">Generate Attendance Sheet</a>
+        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn attendance-btn">Generate Attendance Sheet</a>
         </div>
         <?php endif; ?>
     </div>

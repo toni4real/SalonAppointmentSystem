@@ -5,7 +5,7 @@ require_once '../../includes/db_connection.php';
 require_once '../../includes/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
-    $today = date('F j, Y');
+    $today = date('Y-m-d');
 
     foreach ($_POST['attendance'] as $staff_id => $status) {
         $query = "INSERT INTO staff_attendance (staff_id, attendance_date, status) 
