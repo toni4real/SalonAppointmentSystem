@@ -3,8 +3,8 @@ require_once '../includes/db_connection.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
-    $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
+    $first_name = ucfirst(strtolower(trim(mysqli_real_escape_string($conn, $_POST['first_name']))));
+    $last_name = ucfirst(strtolower(trim(mysqli_real_escape_string($conn, $_POST['last_name']))));
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
@@ -16,8 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_num_rows($check_result) > 0) {
         $error = 'Email is already registered.';
     } else {
-        // Insert new customer with first and last name
-        $query = "INSERT INTO customers (first_name, last_name, email, password, phone) VALUES ('$first_name', '$last_name', '$email', '$password', '$phone')";
+        // Insert new customer with cleaned first and last names
+        $query = "INSERT INTO customers (first_name, last_name, email, password, phone) 
+                  VALUES ('$first_name', '$last_name', '$email', '$password', '$phone')";
 
         if (mysqli_query($conn, $query)) {
             header('Location: customer_login.php');
@@ -27,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>

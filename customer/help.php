@@ -33,6 +33,8 @@
             transition: background-color 0.3s ease;
             display: flex;
             align-items: center;
+            text-decoration: none; /* remove underline */
+            color: inherit; /* keep default text color */
         }
 
         .sidebar .nav-link i {
@@ -79,7 +81,7 @@
     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
     <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
     <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
-    <a class="nav-link" href="appointment_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
+    <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
     <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
     <a class="nav-link active" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
     <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
