@@ -28,9 +28,11 @@ $appointmentQuery = mysqli_query($conn, "
         services s ON a.service_id = s.service_id
     WHERE 
         a.customer_id = '$customer_id'
+        AND (a.status = 'Complete' OR a.status = 'Cancelled')
     ORDER BY 
         a.appointment_date DESC, a.appointment_time DESC
 ");
+
 ?>
 
 <!DOCTYPE html>
