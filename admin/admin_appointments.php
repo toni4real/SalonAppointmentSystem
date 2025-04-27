@@ -116,9 +116,9 @@ if ($adminData) {
                         <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>
                         <td><?= htmlspecialchars($appointment['status']); ?></td>
                         <td>
-                            <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm">View</a>
+                            <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm complete-btn">View</a>
                             <?php if ($appointment['status'] === 'Pending') { ?>
-                                <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Confirm</a>
+                                <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-primary">Confirm</a>
                             <?php } ?>
                             <?php if ($appointment['status'] === 'Confirmed') { ?>
                                 <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-success">Complete</a>

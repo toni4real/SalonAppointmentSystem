@@ -86,13 +86,13 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
       </table>
 
       <div class="text-end">
-        <button type="submit" class="btn">Save Changes</button>
+        <button type="submit" class="btn save-btn">Save Changes</button>
       </div>
   </form>
 
         <?php if (isset($_GET['saved']) && $_GET['saved'] === '1') : ?>
         <div class="text-center mt-3">
-        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn btn-secondary">Generate Attendance Sheet</a>
+        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn btn-secondary">Download Attendance</a>
         </div>
         <?php endif; ?>
     </div>

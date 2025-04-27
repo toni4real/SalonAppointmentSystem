@@ -114,7 +114,7 @@ $firstName = explode(' ', $admin['first_name'])[0];
             <input type="password" class="form-control" name="new_password">
           </div>
           <div class="d-flex justify-content-end">
-            <button type="submit" class="btn">Save Changes</button>
+            <button type="submit" class="btn save-btn">Save Changes</button>
             <a href="admin_dashboard.php" class="btn cancel-btn">Cancel</a>
           </div>
         </form>

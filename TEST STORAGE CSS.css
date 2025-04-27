@@ -51,7 +51,7 @@ body {
   display: flex;
   align-items: center;
   font-weight: 500;
-  gap: 6px;
+  gap: 10px;
 }
 
 .sidebar .nav-link:hover {
@@ -85,53 +85,4 @@ body {
   margin-left: 250px;
   padding: 40px 30px;
   width: calc(100% - 250px);
-}
-
-.payment-history-table {
-  margin-top: 30px;
-}
-
-.table-responsive {
-  background-color: #ffffff;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
-}
-
-.table {
-  margin-bottom: 0;
-}
-
-.table thead {
-  background-color: #6f42c1;
-  color: #ffffff;
-}
-
-.table thead th {
-  padding: 16px;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.table tbody tr {
-  transition: background-color 0.2s;
-}
-
-.table tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
-}
-
-.table tbody tr:hover {
-  background-color: #e9ecef;
-}
-
-.table td {
-  padding: 14px 16px;
-  vertical-align: middle;
-}
-
-.btn-success, .btn-secondary {
-  border-radius: 8px;
 }

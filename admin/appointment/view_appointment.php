@@ -3,6 +3,8 @@ session_start();
 require_once '../../includes/db_connection.php';
 require_once '../../includes/auth.php';
 
+$current_page = basename($_SERVER['PHP_SELF']);
+
 if (!isset($_GET['id'])) {
     die('Appointment ID not provided.');
 }
@@ -95,7 +97,7 @@ function formatPaymentStatusBadge($status) {
     <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="../admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="../admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php' || $current_page == 'view_appointment.php') ? 'active' : ''; ?>" href="../admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="../payment_history.php">
@@ -114,7 +116,7 @@ function formatPaymentStatusBadge($status) {
 
 <div class="main-content">
 
-    <a href="../admin_appointments.php" class="btn mb-4">
+    <a href="../admin_appointments.php" class="btn btn-secondary mb-4">
         <i class="bi bi-arrow-left"></i> Back to Appointments
     </a>
 
@@ -150,8 +152,8 @@ function formatPaymentStatusBadge($status) {
     </div>
 
     <?php if (isset($appointment['payment_status'])): ?>
-    <div class="card shadow-sm">
-        <div class="card-header text-white d-flex justify-content-between align-items-center">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header text-white">
             <h4 class="m-0"><i class="bi bi-credit-card-2-back"></i> Payment Details</h4>
         </div>
         <div class="card-body">

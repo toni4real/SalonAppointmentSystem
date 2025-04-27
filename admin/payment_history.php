@@ -143,7 +143,7 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
                             </td>
                             <td>
                                 <?php if ($payment['payment_status'] === 'Paid'): ?>
-                                    <a href="receipt/generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-secondary">Generate Receipt</a>
+                                    <a href="receipt/generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-secondary">Download Receipt</a>
                                 <?php else: ?>
                                     <span>-</span>
                                 <?php endif; ?>
