@@ -6,12 +6,12 @@ require('../../fpdf/fpdf.php');
 
 date_default_timezone_set('Asia/Manila');
 
-// Check if payment_id is set
+// Fetch the payment details based on payment ID
 if (isset($_GET['payment_id'])) {
     $payment_id = $_GET['payment_id'];
 
-    // Fetch payment details
-    $query = "SELECT p.*, c.first_name, c.last_name, a.appointment_date, a.appointment_time, a.payment_status, s.service_name
+    // Fetch payment details (now includes service price)
+    $query = "SELECT p.*, c.first_name, c.last_name, a.appointment_date, a.appointment_time, a.payment_status, s.service_name, s.price
               FROM payments p
               JOIN appointments a ON p.appointment_id = a.appointment_id
               JOIN customers c ON a.customer_id = c.customer_id
@@ -24,14 +24,11 @@ if (isset($_GET['payment_id'])) {
     $payment = $result->fetch_assoc();
 
     if ($payment) {
-        // Format appointment date and time AFTER fetching
-        $formattedDate = date('F j, Y', strtotime($payment['appointment_date']));
-        $formattedTime = date('h:i A', strtotime($payment['appointment_time']));
+        // Format dates and times
+        $appointmentDateTime = date('F d, Y \a\t h:i A', strtotime($payment['appointment_date'] . ' ' . $payment['appointment_time']));
+        $paymentDateTime = date('F d, Y \a\t h:i A', strtotime($payment['payment_date']));
 
-        // Optional: Format payment date too (if you want)
-        $formattedPaymentDate = date('F j, Y', strtotime($payment['payment_date'])) . ' at ' . date('h:i A', strtotime($payment['payment_date']));
-
-        // Create a new PDF document
+        // Create PDF
         $pdf = new FPDF();
         $pdf->AddPage();
         
@@ -39,42 +36,52 @@ if (isset($_GET['payment_id'])) {
         $pdf->SetFont('Arial', 'B', 16);
 
         // Title
-        $pdf->Cell(200, 10, 'Salon Appointment System Receipt', 0, 1, 'C');
+        $pdf->Cell(0, 10, 'Salon Appointment System Receipt', 0, 1, 'C');
         $pdf->Ln(10);
 
-        // Customer and appointment details
+        // Customer details
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Customer: ', 0, 0);
-        $pdf->Cell(150, 10, $payment['first_name'] . ' ' . $payment['last_name'], 0, 1);
+        $pdf->Cell(50, 10, 'Customer:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, $payment['first_name'] . ' ' . $payment['last_name'], 0, 1);
 
-        $pdf->Cell(40, 10, 'Appointment: ', 0, 0);
-        $pdf->Cell(150, 10, $formattedDate . ' at ' . $formattedTime, 0, 1);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(50, 10, 'Appointment:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, $appointmentDateTime, 0, 1);
 
-        $pdf->Cell(40, 10, 'Service: ', 0, 0);
-        $pdf->Cell(150, 10, $payment['service_name'], 0, 1);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(50, 10, 'Service:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, $payment['service_name'] . ' --- PHP ' . number_format($payment['price'], 2), 0, 1);
 
         // Payment details
-        $pdf->Cell(40, 10, 'Amount Paid: ', 0, 0);
-        $pdf->Cell(150, 10, 'PHP ' . number_format($payment['amount'], 2), 0, 1);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(50, 10, 'Amount Paid:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, 'PHP ' . number_format($payment['amount'], 2), 0, 1);
 
-        $pdf->Cell(40, 10, 'Payment Date: ', 0, 0);
-        $pdf->Cell(150, 10, $formattedPaymentDate, 0, 1);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(50, 10, 'Payment Date:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, $paymentDateTime, 0, 1);
 
-        $pdf->Cell(40, 10, 'Payment Status: ', 0, 0);
-        $pdf->Cell(150, 10, $payment['payment_status'], 0, 1);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(50, 10, 'Payment Status:', 0, 0);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(140, 10, $payment['payment_status'], 0, 1);
 
         // Footer
-        $pdf->Ln(10);
-        $pdf->Cell(200, 10, 'Thank you for choosing our salon!', 0, 1, 'C');
+        $pdf->Ln(15);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->Cell(0, 10, 'Thank you for choosing our salon!', 0, 1, 'C');
 
-        // Output the PDF as forced download
+        // Output the PDF (force download)
         $pdf->Output('D', 'Receipt_' . $payment['payment_id'] . '.pdf');
     } else {
-        // No payment found
         echo "No payment found.";
     }
 } else {
-    // No payment_id provided
-    echo "Payment ID is missing.";
+    echo "Payment ID not provided.";
 }
 ?>

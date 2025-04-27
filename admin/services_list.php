@@ -91,7 +91,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($service['service_name']); ?></h5>
                             <p><?= htmlspecialchars($service['description']); ?></p>
-                            <p><strong>Price:</strong> <?= htmlspecialchars($service['price']); ?></p>
+                            <p><strong>Price:</strong> PHP <?= htmlspecialchars($service['price']); ?></p>
                             <div class="d-flex justify-content-end gap-2">
                                 <button class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editModal<?= $service['service_id']; ?>">
                                     <i class="bi bi-pencil-square"></i> Edit

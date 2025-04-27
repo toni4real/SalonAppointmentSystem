@@ -107,7 +107,7 @@ if ($adminData) {
             <tbody>
                 <?php while ($appointment = mysqli_fetch_assoc($result)) { 
                     $appointmentDate = new DateTime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
-                    $appointmentDateFormatted = $appointmentDate->format('F j, Y g:i A'); // Format: Month Day, Year Hour:Minute AM/PM
+                    $appointmentDateFormatted = $appointmentDate->format('F j, Y \a\t g:i A'); // Format: Month Day, Year Hour:Minute AM/PM
                 ?>
                     <tr>
                         <td><?= htmlspecialchars($appointment['appointment_id']); ?></td>
@@ -116,7 +116,7 @@ if ($adminData) {
                         <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>
                         <td><?= htmlspecialchars($appointment['status']); ?></td>
                         <td>
-                            <a href="view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-primary">View</a>
+                            <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm">View</a>
                             <?php if ($appointment['status'] === 'Pending') { ?>
                                 <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-outline-success">Confirm</a>
                             <?php } ?>
