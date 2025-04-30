@@ -48,35 +48,36 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../admin/css/services_list.css">
 </head>
+
 <body>
 
-<div class="sidebar d-flex flex-column">
-    <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
-    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
-        <i class="bi bi-person-circle"></i> Profile
-    </a>
-    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
-        <i class="bi bi-calendar-check"></i> Appointments
-    </a>
-    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
-        <i class="bi bi-credit-card-2-front"></i> Payments
-    </a>
-    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
-        <i class="bi bi-person-gear"></i> Staff Management
-    </a>
-    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-lines-fill"></i> Staff Attendance
-    </a>
-    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
-        <i class="bi bi-stars"></i> Services
-    </a>
-    <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
-        <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
-</div>
+    <div class="sidebar d-flex flex-column">
+        <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
+        <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+            <i class="bi bi-person-circle"></i> Profile
+        </a>
+        <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+            <i class="bi bi-calendar-check"></i> Appointments
+        </a>
+        <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+            <i class="bi bi-credit-card-2-front"></i> Payments
+        </a>
+        <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+            <i class="bi bi-person-gear"></i> Staff Management
+        </a>
+        <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+            <i class="bi bi-person-lines-fill"></i> Staff Attendance
+        </a>
+        <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+            <i class="bi bi-stars"></i> Services
+        </a>
+        <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -110,7 +111,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- Edit Modal -->
                 <div class="modal fade" id="editModal<?= $service['service_id']; ?>" tabindex="-1">
                     <div class="modal-dialog">
-                        <form class="modal-content" method="POST" action="update_service.php" enctype="multipart/form-data">
+                        <form class="modal-content" method="POST" action="services/edit_service.php" enctype="multipart/form-data">
+                            <input type="hidden" name="service_id" value="<?= $service['service_id']; ?>">
                             <div class="modal-header">
                                 <h5 class="modal-title">Update Service</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -118,7 +120,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Name:</label>
-                                    <input type="text" class="form-control" name="name" value="<?= $service['service_name']; ?>" required>
+                                    <input type="text" class="form-control" name="service_name" value="<?= $service['service_name']; ?>" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Description:</label>
@@ -144,7 +146,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <!-- Delete Modal -->
                 <div class="modal fade" id="deleteModal<?= $service['service_id']; ?>" tabindex="-1">
                     <div class="modal-dialog">
-                        <form class="modal-content" method="POST" action="delete_service.php">
+                        <form class="modal-content" method="POST" action="services/delete_service.php">
                             <div class="modal-header">
                                 <h5 class="modal-title">Confirm Deletion</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -163,42 +165,41 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <?php endforeach; ?>
         </div>
     </div>
-</div>
 
-<!-- Add Service Modal -->
-<div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="modal-content" method="POST" action="add_service.php" enctype="multipart/form-data">
-            <div class="modal-header">
-                <h5 class="modal-title">New Service</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Name:</label>
-                    <input type="text" class="form-control" name="name" required>
+    <!-- Add Service Modal -->
+    <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="POST" action="services/add_service.php" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Description:</label>
-                    <textarea class="form-control" name="description" required></textarea>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name:</label>
+                        <input type="text" class="form-control" name="service_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description:</label>
+                        <textarea class="form-control" name="description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price:</label>
+                        <input type="text" class="form-control" name="price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image:</label>
+                        <input type="file" class="form-control" name="image" required>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Price:</label>
-                    <input type="text" class="form-control" name="price" required>
+                <div class="modal-footer">
+                    <button type="submit" class="btn">Add</button>
+                    <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Image:</label>
-                    <input type="file" class="form-control" name="image" required>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn">Add</button>
-                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

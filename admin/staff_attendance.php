@@ -11,8 +11,8 @@ $firstName = $_SESSION['admin_first_name'] ?? 'Admin';
 $today = date('F j, Y');       // Display on page (ex: April 25, 2025)
 $today_db = date('Y-m-d');      // Pass in URL (ex: 2025-04-25)
 
-// Fetch active staff
-$staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM staff WHERE status = 'active'");
+// Fetch all staff (no filtering by status)
+$staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM staff");
 
 $admin_id = $_SESSION['admin_id'];
 

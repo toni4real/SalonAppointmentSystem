@@ -1,12 +1,14 @@
 <?php
-require_once '../includes/db_connection.php';
+session_start();
+require_once '../../includes/db_connection.php';
+require_once '../../includes/auth.php';
 
 if (isset($_POST['delete_staff'])) {
     $staff_id = $_POST['staff_id'];
 
     $query = "DELETE FROM staff WHERE staff_id='$staff_id'";
     if (mysqli_query($conn, $query)) {
-        header('Location: staff_management.php');
+        header('Location: ../staff_management.php');
         exit();
     } else {
         echo "Error: " . mysqli_error($conn);

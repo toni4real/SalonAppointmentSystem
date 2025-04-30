@@ -95,7 +95,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
                         <td><?= htmlspecialchars($row['role']) ?></td>
                         <td>
-                            <?php if ($row['status'] === 'active') : ?>
+                            <?php if ($row['status'] === 'Active') : ?>
                                 <span class="badge bg-success">Active</span>
                             <?php else : ?>
                                 <span class="badge bg-danger">Inactive</span>
@@ -117,7 +117,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <!-- Edit Modal -->
                     <div class="modal fade" id="editStaffModal<?= $row['staff_id'] ?>" tabindex="-1">
                         <div class="modal-dialog">
-                            <form method="POST" action="update_staff.php">
+                            <form method="POST" action="staff/update_staff.php">
                                 <input type="hidden" name="staff_id" value="<?= $row['staff_id'] ?>">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -146,10 +146,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         </div>
                                         <div class="mb-2">
                                             <label>Status</label>
-                                            <select name="status" class="form-control" required>
-                                                <option <?= $row['status'] == 'Active' ? 'selected' : '' ?>>Active</option>
-                                                <option <?= $row['status'] == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
-                                            </select>
+                                                <select name="status" class="form-control" required>
+                                                    <option value="" disabled <?= ($row['status'] == '') ? 'selected' : '' ?>>--- Select Status ---</option>
+                                                    <option value="Active" <?= $row['status'] == 'Active' ? 'selected' : '' ?>>Active</option>
+                                                    <option value="Inactive" <?= $row['status'] == 'Inactive' ? 'selected' : '' ?>>Inactive</option>
+                                                </select>
                                         </div>
                                         <div class="mb-2">
                                             <label>Email</label>
@@ -161,7 +162,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="submit" name="update_staff.php" class="btn edit-btn">Update</button>
+                                        <button type="submit" name="update_staff" class="btn edit-btn">Update</button>
                                         <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                                     </div>
                                 </div>
@@ -172,7 +173,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <!-- Delete Modal -->
                     <div class="modal fade" id="deleteStaffModal<?= $row['staff_id'] ?>" tabindex="-1">
                         <div class="modal-dialog">
-                            <form method="POST" action="delete_staff.php">
+                            <form method="POST" action="staff/delete_staff.php">
                                 <input type="hidden" name="staff_id" value="<?= $row['staff_id'] ?>">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -200,7 +201,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <!-- Add Staff Modal -->
 <div class="modal fade" id="addStaffModal" tabindex="-1">
     <div class="modal-dialog">
-        <form method="POST" action="add_staff.php">
+        <form method="POST" action="staff/add_staff.php">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">New Staff</h5>
