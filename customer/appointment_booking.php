@@ -8,10 +8,10 @@ if (!isset($_SESSION['customer_id'])) {
     exit();
 }
 
+$customer_id = $_SESSION['customer_id'];
 $serviceQuery = mysqli_query($conn, "SELECT service_id, service_name, price FROM services");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $customer_id = $_SESSION['customer_id'];
     $service_id = $_POST['service_id'];
     $appointment_date = $_POST['appointment_date'];
     $appointment_time = $_POST['appointment_time'];
@@ -30,18 +30,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Check if the user already has the same service in an appointment that is not 'completed' and not 'paid'
+    // Check for existing incomplete/unpaid appointment for the same service name
     $checkExistingService = "
-        SELECT * FROM appointments 
-        WHERE customer_id = $customer_id 
-        AND service_id = $service_id 
-        AND status != 'completed' 
-        AND payment_status != 'paid'
+        SELECT 1 FROM appointments a
+        JOIN services s ON a.service_id = s.service_id
+        WHERE a.customer_id = $customer_id
+        AND s.service_name = (
+            SELECT service_name FROM services WHERE service_id = $service_id
+        )
+        AND (a.status != 'Completed' OR a.payment_status != 'Paid')
     ";
     $result = mysqli_query($conn, $checkExistingService);
-
     if (mysqli_num_rows($result) > 0) {
-        $_SESSION['error'] = "You already have this service booked and it is not yet complete or paid.";
+        $_SESSION['error'] = "You already have this service booked and it is not yet completed or paid.";
         header("Location: appointment_booking.php");
         exit();
     }
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $staffQuery = mysqli_query($conn, "
         SELECT s.staff_id, COUNT(a.appointment_id) AS appointment_count
         FROM staff s
-        LEFT JOIN appointments a ON s.staff_id = a.staff_id 
+        LEFT JOIN appointments a ON s.staff_id = a.staff_id
             AND a.appointment_date = '$appointment_date' AND a.appointment_time = '$appointment_time'
         WHERE s.status = 'active'
         GROUP BY s.staff_id
@@ -64,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ");
 
     $staff = mysqli_fetch_assoc($staffQuery);
-
     if ($staff) {
         $staff_id = $staff['staff_id'];
 
@@ -102,13 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-
 <!-- HTML UI Code Below -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Appointment</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -184,7 +182,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-bottom: 15px;
             border: 1px solid #ced4da;
             border-radius: 4px;
-            box-sizing: border-box;
         }
         .btn-primary {
             background-color: #f77fbe;

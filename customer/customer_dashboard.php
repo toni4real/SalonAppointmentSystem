@@ -15,14 +15,15 @@ $customer_id = $_SESSION['customer_id'];
 $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE customer_id = '$customer_id'");
 $customer = mysqli_fetch_assoc($customerQuery);
 
-// Fetch customer appointments, excluding completed & paid
+// Fetch customer appointments, excluding completed & paid, sorted by recent date/time first
 $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_name AS staff_name 
     FROM appointments a
     JOIN services s ON a.service_id = s.service_id
     JOIN staff st ON a.staff_id = st.staff_id
     WHERE a.customer_id = '$customer_id'
     AND NOT (a.status = 'Completed' AND a.payment_status = 'Paid')
-    ORDER BY a.appointment_date DESC");
+    ORDER BY a.appointment_date ASC, a.appointment_time ASC");
+
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +34,6 @@ $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_na
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/customer_dashboard1.css">
-
 </head>
 <body>
 
