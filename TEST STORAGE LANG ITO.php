@@ -1,102 +1,106 @@
 <?php
 session_start();
-require_once '../../includes/db_connection.php';
-require_once '../../includes/auth.php';
+require_once '../includes/db_connection.php';
+require_once '../includes/auth.php';
 
-if (!isset($_GET['id'])) {
-    die('Appointment ID not provided.');
-}
-
-$appointment_id = $_GET['id'];
-
-$query = "
-    SELECT 
-        a.*, 
-        c.first_name, 
-        c.last_name, 
-        s.service_name,
-        s.price
-    FROM appointments a
-    JOIN customers c ON a.customer_id = c.customer_id
-    JOIN services s ON a.service_id = s.service_id
-    WHERE a.appointment_id = ?
-";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $appointment_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$appointment = $result->fetch_assoc();
+$current_page = basename($_SERVER['PHP_SELF']);
 
 $admin_id = $_SESSION['admin_id'];
 
-$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
-$stmt->bind_param("i", $admin_id);
-$stmt->execute();
-$result_admin = $stmt->get_result();
-$adminData = $result_admin->fetch_assoc();
+// Handle Add Staff
+if (isset($_POST['add_staff'])) {
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $role = trim($_POST['role']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $status = 'Active'; // Default status
 
-if ($adminData) {
-    $firstName = explode(' ', $adminData['first_name'])[0];
-} else {
-    $firstName = "Admin";
-}
-
-if (!$appointment) {
-    die('Appointment not found.');
-}
-
-// Function to display status badges
-function formatStatusBadge($status) {
-    switch ($status) {
-        case 'Pending':
-            return '<span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>';
-        case 'Confirmed':
-            return '<span class="badge bg-primary"><i class="bi bi-check-circle"></i> Confirmed</span>';
-        case 'Completed':
-            return '<span class="badge bg-success"><i class="bi bi-patch-check"></i> Completed</span>';
-        default:
-            return '<span class="badge bg-secondary">Unknown</span>';
+    if (!empty($first_name) && !empty($last_name) && !empty($role)) {
+        $stmt = $conn->prepare("INSERT INTO staff (first_name, last_name, role, email, phone, status, admin_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssi", $first_name, $last_name, $role, $email, $phone, $status, $admin_id);
+        $stmt->execute();
+        header('Location: staff_management.php?success=added');
+        exit();
     }
 }
 
-// Function to display payment status badge (from appointments table)
-function formatPaymentStatusBadge($status) {
-    return ($status == 'Paid') 
-        ? '<span class="badge bg-success"><i class="bi bi-credit-card-2-back"></i> Paid</span>' 
-        : '<span class="badge bg-danger"><i class="bi bi-credit-card-2-back"></i> Unpaid</span>';
+// Handle Edit Staff
+if (isset($_POST['edit_staff'])) {
+    $edit_id = intval($_POST['edit_id']);
+    $first_name = trim($_POST['edit_first_name']);
+    $last_name = trim($_POST['edit_last_name']);
+    $role = trim($_POST['edit_role']);
+    $email = trim($_POST['edit_email']);
+    $phone = trim($_POST['edit_phone']);
+
+    $stmt = $conn->prepare("UPDATE staff SET first_name = ?, last_name = ?, role = ?, email = ?, phone = ? WHERE staff_id = ?");
+    $stmt->bind_param("sssssi", $first_name, $last_name, $role, $email, $phone, $edit_id);
+    $stmt->execute();
+    header('Location: staff_management.php?success=updated');
+    exit();
 }
+
+// Handle Delete Staff
+if (isset($_POST['delete_staff'])) {
+    $delete_id = intval($_POST['delete_id']);
+    $conn->query("DELETE FROM staff WHERE staff_id = $delete_id");
+    header('Location: staff_management.php?success=deleted');
+    exit();
+}
+
+// Fetch Staff
+$staff_members = [];
+$result = $conn->query("SELECT * FROM staff WHERE admin_id = $admin_id ORDER BY staff_id DESC");
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $staff_members[] = $row;
+    }
+}
+
+// Fetch Admin Info
+$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$adminData = $result->fetch_assoc();
+
+$firstName = explode(' ', $adminData['first_name'])[0];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Appointments</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../../admin/css/admin_appointments.css">
+  <meta charset="UTF-8">
+  <title>Staff Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../admin/css/staff_management.css">
 </head>
 <body>
 
 <div class="sidebar d-flex flex-column">
     <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="../admin_dashboard.php">
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
-    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="../admin_profile.php">
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="../admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
-    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="../payment_history.php">
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="../staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
     </a>
-    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="../services_list.php">
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
+    </a>
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
@@ -105,47 +109,172 @@ function formatPaymentStatusBadge($status) {
 </div>
 
 <div class="main-content">
+  <h2 class="mb-4">Manage Staff Members</h2>
 
-    <a href="../admin_appointments.php" class="btn btn-secondary mb-4">
-        <i class="bi bi-arrow-left"></i> Back to Appointments
-    </a>
+  <?php if (isset($_GET['success'])): ?>
+    <?php if ($_GET['success'] == 'added'): ?>
+      <div class="alert alert-success">Staff member added successfully!</div>
+    <?php elseif ($_GET['success'] == 'updated'): ?>
+      <div class="alert alert-info">Staff member updated successfully!</div>
+    <?php elseif ($_GET['success'] == 'deleted'): ?>
+      <div class="alert alert-danger">Staff member deleted successfully!</div>
+    <?php endif; ?>
+  <?php endif; ?>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="m-0"><i class="bi bi-calendar-event"></i> Appointment Details</h4>
+  <!-- Add Staff Form -->
+  <div class="card p-4 mb-5">
+    <form action="staff_management.php" method="POST">
+      <input type="hidden" name="add_staff" value="1">
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="firstName" class="form-label">First Name</label>
+          <input type="text" class="form-control" name="first_name" id="firstName" required>
         </div>
-        <div class="card-body">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <strong><i class="bi bi-person"></i> Customer Name:</strong> 
-                    <?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?>
-                </li>
-                <li class="list-group-item">
-                    <strong><i class="bi bi-stars"></i> Service:</strong> 
-                    <?= htmlspecialchars($appointment['service_name']); ?> 
-                    (₱<?= number_format($appointment['price'], 2); ?>)
-                </li>
-                <li class="list-group-item">
-                    <strong><i class="bi bi-calendar"></i> Date:</strong> 
-                    <?= htmlspecialchars(date('F j, Y', strtotime($appointment['appointment_date']))); ?>
-                </li>
-                <li class="list-group-item">
-                    <strong><i class="bi bi-clock"></i> Time:</strong> 
-                    <?= htmlspecialchars(date('g:i A', strtotime($appointment['appointment_time']))); ?>
-                </li>
-                <li class="list-group-item">
-                    <strong><i class="bi bi-info-circle"></i> Status:</strong> 
-                    <?= formatStatusBadge($appointment['status']); ?>
-                </li>
-                <li class="list-group-item">
-                    <strong><i class="bi bi-credit-card-2-back"></i> Payment Status:</strong> 
-                    <?= formatPaymentStatusBadge($appointment['payment_status']); ?>
-                </li>
-            </ul>
+        <div class="col-md-6 mb-3">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input type="text" class="form-control" name="last_name" id="lastName" required>
         </div>
-    </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="role" class="form-label">Role</label>
+        <select class="form-select" name="role" id="role" required>
+          <option value="" selected disabled>Select Role</option>
+          <option value="Stylist">Stylist</option>
+          <option value="Barber">Barber</option>
+          <option value="Nail Technician">Nail Technician</option>
+          <option value="Receptionist">Receptionist</option>
+          <option value="Makeup Artist">Makeup Artist</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email (optional)</label>
+        <input type="email" class="form-control" name="email" id="email">
+      </div>
+
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone (optional)</label>
+        <input type="text" class="form-control" name="phone" id="phone">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Staff Member</button>
+    </form>
+  </div>
+
+  <!-- Staff List -->
+  <h3 class="mb-3">Staff Members</h3>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Full Name</th>
+          <th>Role</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Date Added</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (!empty($staff_members)): ?>
+          <?php foreach ($staff_members as $index => $staff): ?>
+            <tr>
+              <td><?= $index + 1 ?></td>
+              <td><?= htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']) ?></td>
+              <td><?= htmlspecialchars($staff['role']) ?></td>
+              <td><?= htmlspecialchars($staff['email']) ?></td>
+              <td><?= htmlspecialchars($staff['phone']) ?></td>
+              <td><?= htmlspecialchars($staff['status']) ?></td>
+              <td><?= date('F d, Y', strtotime($staff['created_at'])) ?></td>
+              <td>
+                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $staff['staff_id'] ?>">Edit</button>
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $staff['staff_id'] ?>">Delete</button>
+              </td>
+            </tr>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal<?= $staff['staff_id'] ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <form action="staff_management.php" method="POST" class="modal-content">
+                  <input type="hidden" name="edit_staff" value="1">
+                  <input type="hidden" name="edit_id" value="<?= $staff['staff_id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label class="form-label">First Name</label>
+                      <input type="text" class="form-control" name="edit_first_name" value="<?= htmlspecialchars($staff['first_name']) ?>" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Last Name</label>
+                      <input type="text" class="form-control" name="edit_last_name" value="<?= htmlspecialchars($staff['last_name']) ?>" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Role</label>
+                      <select class="form-select" name="edit_role" required>
+                        <option value="Stylist" <?= $staff['role'] == 'Stylist' ? 'selected' : '' ?>>Stylist</option>
+                        <option value="Barber" <?= $staff['role'] == 'Barber' ? 'selected' : '' ?>>Barber</option>
+                        <option value="Nail Technician" <?= $staff['role'] == 'Nail Technician' ? 'selected' : '' ?>>Nail Technician</option>
+                        <option value="Receptionist" <?= $staff['role'] == 'Receptionist' ? 'selected' : '' ?>>Receptionist</option>
+                        <option value="Makeup Artist" <?= $staff['role'] == 'Makeup Artist' ? 'selected' : '' ?>>Makeup Artist</option>
+                        <option value="Other" <?= $staff['role'] == 'Other' ? 'selected' : '' ?>>Other</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" name="edit_email" value="<?= htmlspecialchars($staff['email']) ?>">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Phone</label>
+                      <input type="text" class="form-control" name="edit_phone" value="<?= htmlspecialchars($staff['phone']) ?>">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal<?= $staff['staff_id'] ?>" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <form action="staff_management.php" method="POST" class="modal-content">
+                  <input type="hidden" name="delete_staff" value="1">
+                  <input type="hidden" name="delete_id" value="<?= $staff['staff_id'] ?>">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete <strong><?= htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']) ?></strong>?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr><td colspan="8" class="text-center">No staff members found.</td></tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

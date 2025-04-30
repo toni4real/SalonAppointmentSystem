@@ -1,6 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Manila'); // <-- Set to your local timezone
+date_default_timezone_set('Asia/Manila');
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
@@ -11,7 +11,23 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Query to fetch appointments and related data
+// Functions for status badges
+function formatStatusBadge($status) {
+    switch ($status) {
+        case 'Pending':
+            return '<span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>';
+        case 'Confirmed':
+            return '<span class="badge bg-primary"><i class="bi bi-check-circle"></i> Confirmed</span>';
+        case 'Completed':
+            return '<span class="badge bg-success"><i class="bi bi-patch-check"></i> Completed</span>';
+        case 'Cancelled':
+            return '<span class="badge bg-danger"><i class="bi bi-x-circle"></i> Cancelled</span>';
+        default:
+            return '<span class="badge bg-secondary">Unknown</span>';
+    }
+}
+
+// Fetch appointments
 $query = "
     SELECT 
         a.*, 
@@ -24,7 +40,6 @@ $query = "
 ";
 $result = mysqli_query($conn, $query);
 
-// Check if query was successful
 if (!$result) {
     die("Query failed: " . mysqli_error($conn));
 }
@@ -37,11 +52,7 @@ $stmt->execute();
 $result_admin = $stmt->get_result();
 $adminData = $result_admin->fetch_assoc();
 
-if ($adminData) {
-    $firstName = explode(' ', $adminData['first_name'])[0];
-} else {
-    $firstName = "Admin";
-}
+$firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
 ?>
 
 <!DOCTYPE html>
@@ -70,8 +81,11 @@ if ($adminData) {
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
+    </a>
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
     </a>
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
@@ -96,7 +110,7 @@ if ($adminData) {
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Appointment ID</th>
+                    <th>#</th>
                     <th>Customer Name</th>
                     <th>Service</th>
                     <th>Date & Time</th>
@@ -105,23 +119,31 @@ if ($adminData) {
                 </tr>
             </thead>
             <tbody>
-                <?php while ($appointment = mysqli_fetch_assoc($result)) { 
+                <?php 
+                $counter = 1; // Start counting appointments from 1
+                while ($appointment = mysqli_fetch_assoc($result)) { 
                     $appointmentDate = new DateTime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
-                    $appointmentDateFormatted = $appointmentDate->format('F j, Y \a\t g:i A'); // Format: Month Day, Year Hour:Minute AM/PM
+                    $appointmentDateFormatted = $appointmentDate->format('F j, Y \a\t g:i A');
                 ?>
                     <tr>
-                        <td><?= htmlspecialchars($appointment['appointment_id']); ?></td>
+                        <td><?= $counter++; ?></td> <!-- Custom appointment ID starting from 1 -->
                         <td><?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?></td>
                         <td><?= htmlspecialchars($appointment['service_name']); ?></td>
                         <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>
-                        <td><?= htmlspecialchars($appointment['status']); ?></td>
+                        <td><?= formatStatusBadge($appointment['status']); ?></td>
                         <td>
-                            <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm complete-btn">View</a>
+                            <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm complete-btn">
+                                <i class="bi bi-eye"></i> View
+                            </a>
                             <?php if ($appointment['status'] === 'Pending') { ?>
-                                <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-primary">Confirm</a>
+                                <a href="appointment/confirm_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-check-circle"></i> Confirm
+                                </a>
                             <?php } ?>
                             <?php if ($appointment['status'] === 'Confirmed') { ?>
-                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-success">Complete</a>
+                                <a href="appointment/complete_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check2-circle"></i> Complete
+                                </a>
                             <?php } ?>
                         </td>
                     </tr>

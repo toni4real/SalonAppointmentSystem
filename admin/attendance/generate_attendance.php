@@ -35,16 +35,19 @@ $pdf->Ln(5);
 
 // Table Header
 $pdf->SetFont('Arial','B',12);
-$pdf->Cell(90,10,'Staff Name',1);
+$pdf->Cell(10,10,'#',1);
+$pdf->Cell(75,10,'Staff Name',1);
 $pdf->Cell(50,10,'Status',1);
 $pdf->Ln();
 
 // Table Content
 $pdf->SetFont('Arial','',12);
+$counter = 1;
 while ($row = mysqli_fetch_assoc($result)) {
     $full_name = $row['first_name'] . ' ' . $row['last_name'];
-    $pdf->Cell(90,10,$full_name,1);
-    $pdf->Cell(50,10,$row['status'],1);
+    $pdf->Cell(10,10,$counter++,1);   // No. column
+    $pdf->Cell(75,10,$full_name,1);   // Staff Name column
+    $pdf->Cell(50,10,$row['status'],1); // Status column
     $pdf->Ln();
 }
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Manila'); // <-- Set to your local timezone
+date_default_timezone_set('Asia/Manila');
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
@@ -18,7 +18,6 @@ if (!isset($_SESSION['admin_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
     $paymentId = $_POST['mark_paid_id'];
 
-    // Get the corresponding appointment ID from payments table
     $stmt = $conn->prepare("SELECT appointment_id FROM payments WHERE payment_id = ?");
     $stmt->bind_param("i", $paymentId);
     $stmt->execute();
@@ -27,8 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
 
     if ($row) {
         $appointmentId = $row['appointment_id'];
-
-        // Update the payment_status in appointments table
         $updateStmt = $conn->prepare("UPDATE appointments SET payment_status = 'Paid' WHERE appointment_id = ?");
         $updateStmt->bind_param("i", $appointmentId);
         if ($updateStmt->execute()) {
@@ -54,6 +51,7 @@ if (!$result) {
     die('Query failed: ' . mysqli_error($conn));
 }
 
+// Get admin first name
 $admin_id = $_SESSION['admin_id'];
 $stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
 $stmt->bind_param("i", $admin_id);
@@ -61,6 +59,17 @@ $stmt->execute();
 $result_admin = $stmt->get_result();
 $adminData = $result_admin->fetch_assoc();
 $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_name'])[0] : 'Admin';
+
+// Function to format payment status badge
+function formatPaymentStatusBadge($status) {
+    if ($status === 'Paid') {
+        return '<span class="badge bg-success"><i class="bi bi-credit-card-2-back"></i> Paid</span>';
+    } elseif ($status === 'Unpaid') {
+        return '<span class="badge bg-danger"><i class="bi bi-credit-card-2-back"></i> Unpaid</span>';
+    } else {
+        return '<span class="badge bg-secondary">No Payment Info</span>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -89,8 +98,11 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
+    </a>
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
     </a>
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
@@ -113,7 +125,7 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Payment ID</th>
+                    <th>#</th>
                     <th>Customer Name</th>
                     <th>Amount</th>
                     <th>Payment Date</th>
@@ -124,26 +136,38 @@ $firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_n
             </thead>
             <tbody>
                 <?php if (mysqli_num_rows($result) > 0): ?>
+                    <?php $counter = 1; // Initialize the counter ?>
                     <?php while ($payment = mysqli_fetch_assoc($result)): ?>
                         <tr>
-                            <td><?= $payment['payment_id']; ?></td>
+                            <!-- Display custom Payment ID starting from 1 -->
+                            <td><?= $counter++; ?></td>
                             <td><?= htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></td>
-                            <td><?= '₱' . number_format($payment['amount'], 2); ?></td>
-                            <td><?= date('F j, Y', strtotime($payment['payment_date'])); ?></td> <!-- Date format updated -->
-                            <td><?= $payment['payment_status']; ?></td>
+                            <td><?= 'PHP ' . number_format($payment['amount'], 2); ?></td>
+                            <td><?= date('F j, Y', strtotime($payment['payment_date'])); ?></td>
+
+                            <!-- Updated Status Badge -->
+                            <td><?= formatPaymentStatusBadge($payment['payment_status']); ?></td>
+
+                            <!-- Action Column -->
                             <td>
                                 <?php if ($payment['payment_status'] === 'Unpaid'): ?>
                                     <form method="POST" class="d-inline">
                                         <input type="hidden" name="mark_paid_id" value="<?= $payment['payment_id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-success">Mark as Paid</button>
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-check-circle"></i> Mark as Paid
+                                        </button>
                                     </form>
                                 <?php else: ?>
-                                    <span class="text-success">Confirmed</span>
+                                    <span class="text-success"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
                                 <?php endif; ?>
                             </td>
+
+                            <!-- Receipt Column -->
                             <td>
                                 <?php if ($payment['payment_status'] === 'Paid'): ?>
-                                    <a href="receipt/generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-secondary">Download Receipt</a>
+                                    <a href="receipt/generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-secondary">
+                                        <i class="bi bi-download"></i> Download Receipt
+                                    </a>
                                 <?php else: ?>
                                     <span>-</span>
                                 <?php endif; ?>

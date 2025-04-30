@@ -14,6 +14,16 @@ $today_db = date('Y-m-d');      // Pass in URL (ex: 2025-04-25)
 // Fetch active staff
 $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM staff WHERE status = 'active'");
 
+$admin_id = $_SESSION['admin_id'];
+
+// Get Admin first name
+$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$admin_result = $stmt->get_result();
+$admin_data = $admin_result->fetch_assoc();
+$firstName = explode(' ', $admin_data['first_name'])[0];
+
 ?>
 
 <!DOCTYPE html>
@@ -30,23 +40,25 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
 
 <div class="sidebar d-flex flex-column">
     <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <!-- Navigation links -->
-    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
     </a>
-    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
+    </a>
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
@@ -63,6 +75,7 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
       <table class="table table-striped">
         <thead>
           <tr>
+            <th>#</th>
             <th>Name</th>
             <th>Present</th>
             <th>Absent</th>
@@ -70,8 +83,11 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
           </tr>
         </thead>
         <tbody>
-          <?php while ($staff = mysqli_fetch_assoc($staffList)) : ?>
+          <?php 
+          $counter = 1;
+          while ($staff = mysqli_fetch_assoc($staffList)) : ?>
             <tr>
+              <td><?= $counter++ ?></td>
               <td><?= htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']) ?></td>
               <td>
                 <input type="radio" name="attendance[<?= $staff['staff_id'] ?>]" value="Present" onchange="updateStatus(this)">
@@ -86,13 +102,17 @@ $staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM st
       </table>
 
       <div class="text-end">
-        <button type="submit" class="btn save-btn">Save Changes</button>
+        <button type="submit" class="btn save-btn">
+          <i class="bi bi-check-circle me-1"></i> Save Changes
+        </button>
       </div>
   </form>
 
         <?php if (isset($_GET['saved']) && $_GET['saved'] === '1') : ?>
         <div class="text-center mt-3">
-        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn btn-secondary">Download Attendance</a>
+        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn btn-secondary">
+          <i class="bi bi-download"></i> Download Attendance
+        </a>
         </div>
         <?php endif; ?>
     </div>

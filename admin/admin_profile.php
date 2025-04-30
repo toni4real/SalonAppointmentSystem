@@ -32,17 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
 }
 
-// Correct SELECT query
 $stmt = $conn->prepare("SELECT first_name, last_name, email, phone FROM admins WHERE admin_id = ?");
 $stmt->bind_param("i", $admin_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $admin = $result->fetch_assoc();
 
-// Get only the first name (can also reuse $admin['first_name'])
 $firstName = explode(' ', $admin['first_name'])[0];
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -57,70 +54,79 @@ $firstName = explode(' ', $admin['first_name'])[0];
 <body>
 
 <div class="sidebar d-flex flex-column">
-    <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
-        <i class="bi bi-person-circle"></i> Profile
-    </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
-        <i class="bi bi-calendar-check"></i> Appointments
-    </a>
-    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
-        <i class="bi bi-credit-card-2-front"></i> Payments
-    </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
-    </a>
-    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
-        <i class="bi bi-stars"></i> Services
-    </a>
-    <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
-        <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
+  <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
+  <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a>
+  <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+    <i class="bi bi-person-circle"></i> Profile
+  </a>
+  <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+    <i class="bi bi-calendar-check"></i> Appointments
+  </a>
+  <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+    <i class="bi bi-credit-card-2-front"></i> Payments
+  </a>
+  <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+    <i class="bi bi-person-gear"></i> Staff Management
+  </a>
+  <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+    <i class="bi bi-person-lines-fill"></i> Staff Attendance
+  </a>
+  <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+    <i class="bi bi-stars"></i> Services
+  </a>
+  <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </a>
 </div>
 
-    <!-- Content -->
-    <div class="main-content">
-      <h2>Admin Profile</h2>
+<div class="main-content">
+  <h2>Admin Profile</h2>
 
-      <div class="profile-card">
-        <?php if (isset($success)): ?>
-          <div class="alert alert-success"><?= $success ?></div>
-        <?php elseif (isset($error)): ?>
-          <div class="alert alert-danger"><?= $error ?></div>
-        <?php endif; ?>
+  <div class="profile-card">
+    <?php if (isset($success)): ?>
+      <div class="alert alert-success"><?= $success ?></div>
+    <?php elseif (isset($error)): ?>
+      <div class="alert alert-danger"><?= $error ?></div>
+    <?php endif; ?>
 
-        <form method="POST" action="">
-          <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" value="<?= htmlspecialchars($admin['first_name']) ?>" required>
-          </div>
-          <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" value="<?= htmlspecialchars($admin['last_name']) ?>" required>
-          </div>
-          <div class="mb-3">
-            <label for="phone" class="form-label">Phone Number</label>
-            <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($admin['phone']) ?>" required>
-            </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($admin['email']) ?>" required>
-          </div>
-          <div class="mb-3">
-            <label for="new_password" class="form-label">New Password <small class="text-muted">(leave blank to keep current)</small></label>
-            <input type="password" class="form-control" name="new_password">
-          </div>
-          <div class="d-flex justify-content-end">
-            <button type="submit" class="btn save-btn">Save Changes</button>
-            <a href="admin_dashboard.php" class="btn cancel-btn">Cancel</a>
-          </div>
-        </form>
+    <form method="POST" action="">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="first_name" class="form-label">First Name</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" value="<?= htmlspecialchars($admin['first_name']) ?>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="last_name" class="form-label">Last Name</label>
+          <input type="text" class="form-control" id="last_name" name="last_name" value="<?= htmlspecialchars($admin['last_name']) ?>" required>
+        </div>
       </div>
-    </div>
 
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($admin['phone']) ?>" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email Address</label>
+        <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($admin['email']) ?>" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="new_password" class="form-label">New Password <small class="text-muted">(leave blank to keep current)</small></label>
+        <input type="password" class="form-control" name="new_password">
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn save-btn"> 
+          <i class="bi bi-check-circle me-1"></i> Save Changes
+        </button>
+        <a href="admin_dashboard.php" class="btn cancel-btn">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
 
 </body>
 </html>

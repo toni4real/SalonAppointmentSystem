@@ -48,26 +48,29 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../admin/css/services_list.css">
 </head>
-
 <body>
+
 <div class="sidebar d-flex flex-column">
     <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-    <a class="nav-link <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
         <i class="bi bi-person-circle"></i> Profile
     </a>
-    <a class="nav-link <?php echo ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
         <i class="bi bi-calendar-check"></i> Appointments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
-    <a class="nav-link <?php echo ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
     </a>
-    <a class="nav-link <?php echo ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
+    </a>
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
@@ -80,7 +83,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <h2>Manage Services</h2>
 
         <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addServiceModal">
-            <i class="bi bi-plus-circle"></i> Add Service
+            <i class="bi bi-plus-circle"></i> Add New Service
         </button>
 
         <div class="row g-4 mt-2">
@@ -93,10 +96,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <p><?= htmlspecialchars($service['description']); ?></p>
                             <p><strong>Price:</strong> PHP <?= htmlspecialchars($service['price']); ?></p>
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn edit-btn" data-bs-toggle="modal" data-bs-target="#editModal<?= $service['service_id']; ?>">
+                                <button class="btn edit-btn btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $service['service_id']; ?>">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </button>
-                                <button class="btn delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $service['service_id']; ?>">
+                                <button class="btn delete-btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $service['service_id']; ?>">
                                     <i class="bi bi-trash"></i> Delete
                                 </button>
                             </div>
@@ -109,11 +112,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="modal-dialog">
                         <form class="modal-content" method="POST" action="update_service.php" enctype="multipart/form-data">
                             <div class="modal-header">
-                                <h5 class="modal-title">Edit Service</h5>
+                                <h5 class="modal-title">Update Service</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <input type="hidden" name="id" value="<?= $service['service_id']; ?>">
                                 <div class="mb-3">
                                     <label class="form-label">Name:</label>
                                     <input type="text" class="form-control" name="name" value="<?= $service['service_name']; ?>" required>
@@ -132,7 +134,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn">Update Service</button>
+                                <button type="submit" class="btn">Update</button>
                                 <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                             </div>
                         </form>
@@ -149,11 +151,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name="id" value="<?= $service['service_id']; ?>">
-                                <p>Are you sure you want to delete "<strong><?= $service['service_name']; ?></strong>"?</p>
+                                <p>Are you sure you want to delete "<strong><?= $service['service_name']; ?></strong>" from the services?</p>
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn delete-btn">Yes</button>
-                                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">No</butto>
+                                <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">No</button>
                             </div>
                         </form>
                     </div>
@@ -168,7 +170,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <div class="modal-dialog">
         <form class="modal-content" method="POST" action="add_service.php" enctype="multipart/form-data">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Service</h5>
+                <h5 class="modal-title">New Service</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -190,7 +192,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn">Add Service</button>
+                <button type="submit" class="btn">Add</button>
                 <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
             </div>
         </form>

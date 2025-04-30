@@ -103,13 +103,16 @@ function formatPaymentStatusBadge($status) {
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="../payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="../staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
+    </a>
     <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="../staff_attendance.php">
-        <i class="bi bi-person-gear"></i> Staff Attendance
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
     </a>
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="../services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
+    <a class="nav-link btn btn-danger mt-auto text-white" href="../admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>
 </div>
