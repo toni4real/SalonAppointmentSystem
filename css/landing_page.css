@@ -6,7 +6,7 @@ html {
 }
 
 .navbar {
-    background-color: #d276e2;
+    background-color: #645394;
     height: 4rem;
     width: 100%;
     display: flex;
@@ -35,7 +35,7 @@ html {
 
 /* Active Link */
 .nav-link.active {
-    color: #d276e2 !important; /* Highlight active link with the brand color */
+    color: #645394 !important; /* Highlight active link with the brand color */
     background-color: rgba(255, 255, 255, 0.3); /* Subtle background for active state */
 }
 
@@ -68,7 +68,7 @@ html {
 }
 
 .dropdown-menu {
-    background-color: #b765cc;
+    background-color: #645394;
 }
 
 .dropdown-item {
@@ -92,7 +92,7 @@ html {
 }
 
 .icon-links i:hover {
-    color: #d276e2; /* Change icon color on hover */
+    color: #645394; /* Change icon color on hover */
 }
 
 
@@ -110,23 +110,28 @@ html {
     justify-content: center;
     text-align: center;
     flex-direction: column;
+     
 }
 
 .hero-section h1 {
-  font-family: "Dancing Script", cursive;
-  font-optical-sizing: auto;
-  font-size: 10rem;
-  font-weight: normal;
-}
+    font-family: "Dancing Script", cursive;
+    font-optical-sizing: auto;
+    font-size: 10rem;
+    font-weight: normal;
+    color: #4B0082;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Black shadow */
+  }
+  
 
 .hero-section p {
     font-size: 1.5rem;
     margin: 10px 0 40px 0;
     font-family: 'Roboto', sans-serif;
+    color:#4B0082;
 }
 
 .hero-section .btn {
-    background-color: #d276e2;
+    background-color: #645394;
     border: none;
     padding: 10px 30px;
 }
@@ -134,7 +139,7 @@ html {
 /* Book Appointment Button */
 .btn {
     color: white; /* White text for the button */
-    background-color: #d276e2; /* Brand color as background */
+    background-color: #645394; /* Brand color as background */
     border: none; /* Remove default border */
     padding: 10px 20px; /* Add padding to the button */
     font-size: 1.25rem; /* Adjust font size */
@@ -146,7 +151,7 @@ html {
 }
 
 .btn:hover {
-    background-color: #b765cc; /* Darker shade on hover */
+    background-color: #645394; /* Darker shade on hover */
     transform: scale(1.05); /* Slightly increase size for hover effect */
 }
 

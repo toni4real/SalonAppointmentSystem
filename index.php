@@ -53,7 +53,7 @@ session_start();
 
     <!-- Hero Section -->
     <div class="hero-section">
-        <h1>Welcome to Atrium!</h1>
+        <h1>Welcome to Atrium</h1>
         <p>where beauty meets comfort, and every visit feels like home.</p>
         <a href="customer/appointment_booking.php" class="btn btn-lg btn-primary">Book Appointment</a>
         <div class="icon-links d-none d-md-flex">
