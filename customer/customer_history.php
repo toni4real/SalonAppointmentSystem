@@ -14,7 +14,7 @@ $customer_id = $_SESSION['customer_id'];
 $query = mysqli_query($conn, "SELECT * FROM customers WHERE customer_id='$customer_id'");
 $customer = mysqli_fetch_assoc($query);
 
-// Fetch appointments
+// Fetch ONLY completed and paid appointments
 $appointmentQuery = mysqli_query($conn, "
     SELECT 
         a.appointment_date AS appointment_date,
@@ -28,11 +28,11 @@ $appointmentQuery = mysqli_query($conn, "
         services s ON a.service_id = s.service_id
     WHERE 
         a.customer_id = '$customer_id'
-        AND (a.status = 'Complete' OR a.status = 'Cancelled')
+        AND a.status = 'Completed'
+        AND a.payment_status = 'Paid'
     ORDER BY 
         a.appointment_date DESC, a.appointment_time DESC
 ");
-
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +54,7 @@ $appointmentQuery = mysqli_query($conn, "
 <div class="sidebar">
     <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-    <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
     <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
     <a class="nav-link active" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
     <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
@@ -83,20 +83,27 @@ $appointmentQuery = mysqli_query($conn, "
                 </thead>
                 <tbody>
                     <?php 
-                    $counter = 1; // Start counting from 1
-                    while ($appointment = mysqli_fetch_assoc($appointmentQuery)): 
+                    $counter = 1;
+                    if (mysqli_num_rows($appointmentQuery) > 0):
+                        while ($appointment = mysqli_fetch_assoc($appointmentQuery)):
                     ?>
                         <tr>
-                            <td><?php echo $counter++; ?></td> <!-- Display and increment -->
+                            <td><?php echo $counter++; ?></td>
                             <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
                             <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
                             <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
                             <td><?php echo htmlspecialchars($appointment['status']); ?></td>
                             <td><?php echo htmlspecialchars($appointment['payment_status']); ?></td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php 
+                        endwhile;
+                    else: 
+                    ?>
+                        <tr>
+                            <td colspan="6" class="text-muted">No completed and paid appointments found.</td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
-
             </table>
         </div>
     </div>

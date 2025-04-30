@@ -67,7 +67,7 @@ $customer = mysqli_fetch_assoc($query);
     <div class="sidebar">
         <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
         <a class="nav-link active" href="profile.php"><i class="bi bi-person-circle"></i> Edit Profile</a>
-        <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
         <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
         <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
         <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>

@@ -15,12 +15,13 @@ $customer_id = $_SESSION['customer_id'];
 $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE customer_id = '$customer_id'");
 $customer = mysqli_fetch_assoc($customerQuery);
 
-// Fetch customer appointments
+// Fetch customer appointments, excluding completed & paid
 $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_name AS staff_name 
     FROM appointments a
     JOIN services s ON a.service_id = s.service_id
     JOIN staff st ON a.staff_id = st.staff_id
     WHERE a.customer_id = '$customer_id'
+    AND NOT (a.status = 'Completed' AND a.payment_status = 'Paid')
     ORDER BY a.appointment_date DESC");
 ?>
 
@@ -31,89 +32,15 @@ $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_na
     <title>Customer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/customer_dashboard.css">
+    <link rel="stylesheet" href="../css/customer_dashboard1.css">
 
-    <style>
-        body {
-        display: flex;
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-    }
-
-    .sidebar {
-        width: 250px;
-        background-color: #f77fbe;
-        height: 100vh;
-        position: fixed;
-        padding: 20px 0;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .sidebar .nav-link {
-        color: white;
-        padding: 12px 20px;
-        width: 100%;
-        text-align: left;
-        transition: background-color 0.3s ease;
-        display: flex;
-        align-items: center;
-    }
-
-    .sidebar .nav-link i {
-        margin-right: 10px;
-    }
-
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
-    }
-
-    .sidebar .btn-danger {
-        margin-top: auto;
-        margin-bottom: 20px;
-        width: 80%;
-        border-radius: 20px;
-    }
-
-    .main-content {
-        margin-left: 250px;
-        padding: 30px;
-        width: 100%;
-    }
-
-    .welcome-message h2 {
-        color: #f77fbe;
-    }
-
-    .table-container {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .table th {
-        background-color: #f77fbe;
-        color: white;
-        text-align: center;
-    }
-
-    .table td {
-        text-align: center;
-    }
-    </style>
 </head>
 <body>
 
 <div class="sidebar">
     <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-    <a class="nav-link active" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a class="nav-link active" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
     <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
     <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
     <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>

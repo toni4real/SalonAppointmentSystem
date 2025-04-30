@@ -16,6 +16,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $appointment_date = $_POST['appointment_date'];
     $appointment_time = $_POST['appointment_time'];
 
+    // Validation: Date and Time
+    $current_date = date('Y-m-d');
+    if ($appointment_date < $current_date) {
+        $_SESSION['error'] = "Appointment date cannot be in the past.";
+        header("Location: appointment_booking.php");
+        exit();
+    }
+
+    if ($appointment_time < '09:00' || $appointment_time > '18:00') {
+        $_SESSION['error'] = "Appointment time must be between 09:00 AM and 06:00 PM.";
+        header("Location: appointment_booking.php");
+        exit();
+    }
+
+    // Check if the user already has the same service in an appointment that is not 'completed' and not 'paid'
+    $checkExistingService = "
+        SELECT * FROM appointments 
+        WHERE customer_id = $customer_id 
+        AND service_id = $service_id 
+        AND status != 'completed' 
+        AND payment_status != 'paid'
+    ";
+    $result = mysqli_query($conn, $checkExistingService);
+
+    if (mysqli_num_rows($result) > 0) {
+        $_SESSION['error'] = "You already have this service booked and it is not yet complete or paid.";
+        header("Location: appointment_booking.php");
+        exit();
+    }
+
     // Get service price
     $serviceResult = mysqli_query($conn, "SELECT price FROM services WHERE service_id = $service_id");
     $service = mysqli_fetch_assoc($serviceResult);
@@ -38,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($staff) {
         $staff_id = $staff['staff_id'];
 
-        // Insert the appointment into the appointments table
+        // Insert the appointment
         $insertAppointment = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status)
                               VALUES (?, ?, ?, ?, ?, 'pending')";
         $stmt = mysqli_prepare($conn, $insertAppointment);
@@ -47,9 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_stmt_execute($stmt)) {
             $appointment_id = mysqli_insert_id($conn);
 
-            // Insert into the payments table
-            $payment_method = 'Unpaid'; // Assuming the payment method is "Unpaid" for now
-            $payment_date = date('Y-m-d H:i:s'); // Current date and time
+            // Insert into payments
+            $payment_method = 'Unpaid';
+            $payment_date = date('Y-m-d H:i:s');
             $insertPayment = "INSERT INTO payments (appointment_id, payment_method, amount, payment_date)
                               VALUES (?, ?, ?, ?)";
             $stmtPayment = mysqli_prepare($conn, $insertPayment);
@@ -72,7 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<!-- HTML UI Code Below Stays the Same -->
+
+<!-- HTML UI Code Below -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -176,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="sidebar">
         <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
         <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-        <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
         <a class="nav-link active" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
         <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
         <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
@@ -206,11 +237,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="mb-3">
                     <label for="appointment_date" class="form-label">Date:</label>
-                    <input type="date" name="appointment_date" class="form-control" required>
+                    <input type="date" name="appointment_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="mb-3">
                     <label for="appointment_time" class="form-label">Time:</label>
-                    <input type="time" name="appointment_time" class="form-control" required>
+                    <input type="time" name="appointment_time" class="form-control" required min="09:00" max="18:00">
                 </div>
                 <button type="submit" class="btn btn-primary"
                     onclick="this.disabled=true; this.innerText='Booking...'; this.form.submit();">
