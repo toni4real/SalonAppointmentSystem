@@ -3,7 +3,6 @@ session_start();
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
-// Ensure customer is logged in
 if (!isset($_SESSION['customer_id'])) {
     header('Location: customer_login.php');
     exit();
@@ -11,19 +10,17 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id'];
 
-// Fetch customer details
 $customerQuery = mysqli_query($conn, "SELECT * FROM customers WHERE customer_id = '$customer_id'");
 $customer = mysqli_fetch_assoc($customerQuery);
 
-// Fetch customer appointments, excluding completed & paid, sorted by recent date/time first
 $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_name AS staff_name 
     FROM appointments a
     JOIN services s ON a.service_id = s.service_id
     JOIN staff st ON a.staff_id = st.staff_id
     WHERE a.customer_id = '$customer_id'
+    AND a.status != 'Cancelled'
     AND NOT (a.status = 'Completed' AND a.payment_status = 'Paid')
     ORDER BY a.appointment_date ASC, a.appointment_time ASC");
-
 ?>
 
 <!DOCTYPE html>
@@ -65,18 +62,72 @@ $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_na
                         <th>Time</th>
                         <th>Status</th>
                         <th>Payment Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($appointment = mysqli_fetch_assoc($appointmentQuery)): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($appointment['service_name']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['staff_name']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['appointment_date']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['status']); ?></td>
-                            <td><?php echo htmlspecialchars($appointment['payment_status']); ?></td>
+                            <td><?= htmlspecialchars($appointment['service_name']) ?></td>
+                            <td><?= htmlspecialchars($appointment['staff_name']) ?></td>
+                            <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
+                            <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
+                            <td><?= htmlspecialchars($appointment['status']) ?></td>
+                            <td><?= htmlspecialchars($appointment['payment_status']) ?></td>
+                            <td>
+                                <?php if ($appointment['status'] !== 'Confirmed'): ?>
+                                    <a href="actions/edit_appointment.php?id=<?= $appointment['appointment_id'] ?>" class="btn btn-sm text-white" style="background-color: #6f42c1;">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $appointment['appointment_id'] ?>">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal<?= $appointment['appointment_id'] ?>">
+                                        <i class="bi bi-x-circle"></i> Cancel Appointment
+                                    </button>
+                                <?php endif; ?>
+                            </td>
                         </tr>
+
+                        <!-- Cancel Modal -->
+                        <div class="modal fade" id="cancelModal<?= $appointment['appointment_id'] ?>" tabindex="-1" aria-labelledby="cancelModalLabel<?= $appointment['appointment_id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelModalLabel<?= $appointment['appointment_id'] ?>">Cancel Appointment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to cancel this appointment?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <a href="actions/cancel_appointment.php?id=<?= $appointment['appointment_id'] ?>" class="btn btn-warning">Confirm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal<?= $appointment['appointment_id'] ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?= $appointment['appointment_id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel<?= $appointment['appointment_id'] ?>">Delete Appointment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this appointment?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <a href="actions/delete_appointment.php?id=<?= $appointment['appointment_id'] ?>" class="btn btn-danger">Confirm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     <?php endwhile; ?>
                 </tbody>
             </table>
@@ -84,5 +135,6 @@ $appointmentQuery = mysqli_query($conn, "SELECT a.*, s.service_name, st.first_na
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

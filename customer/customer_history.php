@@ -14,7 +14,7 @@ $customer_id = $_SESSION['customer_id'];
 $query = mysqli_query($conn, "SELECT * FROM customers WHERE customer_id='$customer_id'");
 $customer = mysqli_fetch_assoc($query);
 
-// Fetch ONLY completed and paid appointments
+// Fetch ONLY completed and paid appointments or cancelled
 $appointmentQuery = mysqli_query($conn, "
     SELECT 
         a.appointment_date AS appointment_date,
@@ -28,11 +28,11 @@ $appointmentQuery = mysqli_query($conn, "
         services s ON a.service_id = s.service_id
     WHERE 
         a.customer_id = '$customer_id'
-        AND a.status = 'Completed'
-        AND a.payment_status = 'Paid'
+        AND (a.status = 'Completed' AND a.payment_status = 'Paid' OR a.status = 'Cancelled')
     ORDER BY 
-        a.appointment_date DESC, a.appointment_time DESC
+        a.appointment_date ASC, a.appointment_time ASC
 ");
+
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +68,7 @@ $appointmentQuery = mysqli_query($conn, "
     </div>
 
     <div class="table-container">
-        <h4>Your History History</h4>
+        <h4>Your History</h4>
         <div class="table-responsive">
             <table class="table table-bordered align-middle text-center">
                 <thead>
