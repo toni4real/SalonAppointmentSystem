@@ -26,9 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
 
     if ($row) {
         $appointmentId = $row['appointment_id'];
+
         $updateStmt = $conn->prepare("UPDATE appointments SET payment_status = 'Paid' WHERE appointment_id = ?");
         $updateStmt->bind_param("i", $appointmentId);
+
         if ($updateStmt->execute()) {
+            // Get customer_id from appointment
+            $custStmt = $conn->prepare("SELECT customer_id FROM appointments WHERE appointment_id = ?");
+            $custStmt->bind_param("i", $appointmentId);
+            $custStmt->execute();
+            $custStmt->bind_result($customerId);
+            $custStmt->fetch();
+            $custStmt->close();
+
+            // Insert notification for the customer
+            $notifMsg = "Your payment has been confirmed. Thank you!";
+            $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, message) VALUES (?, ?)");
+            $notifStmt->bind_param("is", $customerId, $notifMsg);
+            $notifStmt->execute();
+            $notifStmt->close();
+
             $_SESSION['message'] = "Payment marked as paid successfully.";
             header("Location: payment_history.php");
             exit();
@@ -136,19 +153,14 @@ function formatPaymentStatusBadge($status) {
             </thead>
             <tbody>
                 <?php if (mysqli_num_rows($result) > 0): ?>
-                    <?php $counter = 1; // Initialize the counter ?>
+                    <?php $counter = 1; ?>
                     <?php while ($payment = mysqli_fetch_assoc($result)): ?>
                         <tr>
-                            <!-- Display custom Payment ID starting from 1 -->
                             <td><?= $counter++; ?></td>
                             <td><?= htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></td>
                             <td><?= 'PHP ' . number_format($payment['amount'], 2); ?></td>
                             <td><?= date('F j, Y', strtotime($payment['payment_date'])); ?></td>
-
-                            <!-- Updated Status Badge -->
                             <td><?= formatPaymentStatusBadge($payment['payment_status']); ?></td>
-
-                            <!-- Action Column -->
                             <td>
                                 <?php if ($payment['payment_status'] === 'Unpaid'): ?>
                                     <form method="POST" class="d-inline">
@@ -161,8 +173,6 @@ function formatPaymentStatusBadge($status) {
                                     <span class="text-success"><i class="bi bi-check-circle-fill"></i> Confirmed</span>
                                 <?php endif; ?>
                             </td>
-
-                            <!-- Receipt Column -->
                             <td>
                                 <?php if ($payment['payment_status'] === 'Paid'): ?>
                                     <a href="receipt/generate_receipt.php?payment_id=<?= $payment['payment_id']; ?>" class="btn btn-sm btn-secondary">

@@ -80,7 +80,6 @@ html {
     display: flex;
     align-items: center; /* Align icons vertically centered */
     justify-content: center; /* Align to the right side */
-    margin-top: 20px;
 }
 
 .icon-links i {
@@ -120,14 +119,19 @@ html {
     font-weight: normal;
     color: #4B0082;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Black shadow */
+    margin-bottom: 0;
   }
   
 
 .hero-section p {
     font-size: 1.5rem;
-    margin: 10px 0 40px 0;
+    margin: 10px 0 0 0;
     font-family: 'Roboto', sans-serif;
-    color:#4B0082;
+    color: #4B0082;
+    text-shadow: 2px 2px 4px rgba(75, 0, 130, 0.4);
+    margin-bottom: 40px;
+    font-weight: 500;
+    
 }
 
 .hero-section .btn {
@@ -148,11 +152,11 @@ html {
     transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
     text-decoration: none; /* Remove underline */
     display: inline-block; /* Ensure button is inline and clickable */
+    margin-bottom: 60px;
 }
 
 .btn:hover {
     background-color: #645394; /* Darker shade on hover */
-    transform: scale(1.05); /* Slightly increase size for hover effect */
 }
 
 .btn:focus {

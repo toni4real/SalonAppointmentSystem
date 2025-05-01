@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
 if (!isset($_SESSION['customer_id'])) {
@@ -7,11 +8,25 @@ if (!isset($_SESSION['customer_id'])) {
     exit();
 }
 
-$notifications = [
-    "Your appointment on April 15 at 3:00 PM is confirmed!",
-    "Don't forget to upload your proof of payment for your last booking.",
-    "Check out our new massage services added this week!"
-];
+$customer_id = $_SESSION['customer_id'];
+
+// Fetch notifications for the logged-in customer along with service name
+$query = "
+    SELECT n.*, s.service_name 
+    FROM notifications n
+    LEFT JOIN services s ON n.service_id = s.service_id
+    WHERE n.customer_id = $customer_id
+    ORDER BY n.notification_date DESC
+";
+$result = mysqli_query($conn, $query);
+
+// Check if the query was successful
+if (!$result) {
+    die('Error fetching notifications: ' . mysqli_error($conn));
+}
+
+// Store notifications in an array
+$notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -20,15 +35,14 @@ $notifications = [
     <meta charset="UTF-8">
     <title>Notifications</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
+            display: flex;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
-            display: flex;
         }
-
         .sidebar {
             width: 250px;
             background-color: #f77fbe;
@@ -40,7 +54,6 @@ $notifications = [
             flex-direction: column;
             align-items: center;
         }
-
         .sidebar .nav-link {
             color: white;
             padding: 12px 20px;
@@ -50,43 +63,59 @@ $notifications = [
             display: flex;
             align-items: center;
         }
-
         .sidebar .nav-link i {
             margin-right: 10px;
         }
-
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
         }
-
         .sidebar .btn-danger {
             margin-top: auto;
             margin-bottom: 20px;
             width: 80%;
             border-radius: 20px;
         }
-
         .main-content {
             margin-left: 250px;
-            padding: 30px;
+            padding: 40px;
             width: 100%;
         }
-
-        h3 {
-            color: #f77fbe;
-            text-align: center;
-            margin-bottom: 30px;
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            margin: auto;
         }
-
-        .list-group-item i {
-            vertical-align: middle;
+        h2 {
+            color: #f77fbe;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .notification-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .notification-item h5 {
+            margin: 0;
+            color: #f77fbe;
+        }
+        .notification-item p {
+            margin: 5px 0;
+        }
+        .notification-date {
+            font-size: 0.8rem;
+            color: #777;
         }
     </style>
 </head>
 <body>
-
 <div class="sidebar">
     <h5 class="fw-bold mb-4">Salon Customer Panel</h5>
     <a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a>
@@ -99,16 +128,30 @@ $notifications = [
 </div>
 
 <div class="main-content">
-    <h3>Notifications</h3>
-    <ul class="list-group">
-        <?php foreach ($notifications as $note): ?>
-            <li class="list-group-item">
-                <i class="bi bi-bell-fill text-warning me-2"></i> <?= $note ?>
-            </li>
-        <?php endforeach; ?>
-    </ul>
+    <div class="container">
+        <h2 class="text-center">Notifications</h2>
+
+        <?php if (empty($notifications)): ?>
+            <div class="alert alert-info">You have no new notifications.</div>
+        <?php else: ?>
+            <?php foreach ($notifications as $notification): ?>
+                <div class="notification-item">
+                    <h5>
+                        <?php echo isset($notification['service_name']) && !empty($notification['service_name']) ? htmlspecialchars($notification['service_name']) : 'No title available'; ?>
+                    </h5>
+                    <p>
+                        <?php echo isset($notification['message']) ? htmlspecialchars($notification['message']) : 'No message available'; ?>
+                    </p>
+                    <p class="notification-date">
+                        <?php echo isset($notification['notification_date']) ? date('F j, Y, g:i a', strtotime($notification['notification_date'])) : 'Date not available'; ?>
+                    </p>
+                </div>  
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

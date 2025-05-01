@@ -36,14 +36,6 @@ session_start();
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#servicesSection">Services</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">User Manual</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
                     <li class="nav-item"><a class="nav-link" href="customer/customer_login.php">Log In</a></li>
                     <li class="nav-item"><a class="nav-link" href="customer/customer_registration.php">Sign Up</a></li>
                 </ul>
