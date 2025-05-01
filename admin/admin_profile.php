@@ -83,14 +83,13 @@ $firstName = explode(' ', $admin['first_name'])[0];
 
 <div class="main-content">
   <h2>Admin Profile</h2>
-
+  <hr>
+  <?php if (isset($success)): ?>
+    <div class="alert alert-success"><?= $success ?></div>
+  <?php elseif (isset($error)): ?>
+    <div class="alert alert-danger"><?= $error ?></div>
+  <?php endif; ?>
   <div class="profile-card">
-    <?php if (isset($success)): ?>
-      <div class="alert alert-success"><?= $success ?></div>
-    <?php elseif (isset($error)): ?>
-      <div class="alert alert-danger"><?= $error ?></div>
-    <?php endif; ?>
-
     <form method="POST" action="">
       <div class="row">
         <div class="col-md-6 mb-3">

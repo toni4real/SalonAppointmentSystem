@@ -96,17 +96,15 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
 </div>
 
 <div class="main-content">
-
-<?php if (isset($_SESSION['message'])): ?>
-    <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
-<?php endif; ?>
-<?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
-<?php endif; ?>
-
     <h2>Manage Appointments</h2>
-
+    <hr>
     <div class="appointments-table table-responsive">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+    <?php endif; ?>
         <table class="table table-striped">
             <thead>
                 <tr>

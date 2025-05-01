@@ -130,15 +130,15 @@ function formatPaymentStatusBadge($status) {
 </div>
 
 <div class="main-content">
+    <h2>Payment History</h2>
+    <hr>
+    <div class="payment-history-table table-responsive">
     <?php if (isset($_SESSION['message'])): ?>
         <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
     <?php endif; ?>
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
     <?php endif; ?>
-
-    <h2>Payment History</h2>
-    <div class="payment-history-table table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>

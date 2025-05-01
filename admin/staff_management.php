@@ -71,6 +71,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <div class="main-content">
     <h2 class="mb-4">Manage Staff Members</h2>
+    <hr>
     <div class="staff-management-table table-responsive">
         <button class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">
             <i class="bi bi-plus-circle"></i> Add New Staff

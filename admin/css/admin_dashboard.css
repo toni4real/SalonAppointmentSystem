@@ -134,3 +134,7 @@ body {
   font-size: 1.2rem;
   font-weight: 600;
 }
+
+.container {
+  padding: 0 50px;
+}

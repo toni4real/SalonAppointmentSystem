@@ -82,11 +82,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Main Content -->
     <div class="main-content">
         <h2>Manage Services</h2>
-
+        <hr>
         <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addServiceModal">
             <i class="bi bi-plus-circle"></i> Add New Service
         </button>
-
         <div class="row g-4 mt-2">
             <?php foreach ($services as $service): ?>
                 <div class="col-md-4">

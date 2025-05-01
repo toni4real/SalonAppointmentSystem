@@ -68,10 +68,9 @@ $firstName = explode(' ', $admin_data['first_name'])[0];
 
 <div class="main-content">
   <h2>Staff Attendance for <?= $today ?></h2>
+  <hr>
   <form method="POST" action="attendance/save_attendance.php">
-
     <div class="staff-attendance-table table-responsive">
-
       <table class="table table-striped">
         <thead>
           <tr>
