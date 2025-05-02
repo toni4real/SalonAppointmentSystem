@@ -12,8 +12,13 @@ if (!isset($_SESSION['admin_id'])) {
 if (isset($_GET['id'])) {
     $appointmentId = $_GET['id'];
 
-    // Get appointment and customer info
-    $stmt = $conn->prepare("SELECT appointment_date, customer_id FROM appointments WHERE appointment_id = ?");
+    // Get appointment, customer info, and service name
+    $stmt = $conn->prepare("
+        SELECT a.appointment_date, a.customer_id, s.service_name 
+        FROM appointments a
+        JOIN services s ON a.service_id = s.service_id
+        WHERE a.appointment_id = ?
+    ");
     $stmt->bind_param("i", $appointmentId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -22,15 +27,17 @@ if (isset($_GET['id'])) {
     if ($appointment) {
         $customerId = $appointment['customer_id'];
         $appointmentDate = $appointment['appointment_date'];
+        $serviceName = $appointment['service_name'];
 
         // Mark appointment as completed
         $updateStmt = $conn->prepare("UPDATE appointments SET status = 'Completed' WHERE appointment_id = ?");
         $updateStmt->bind_param("i", $appointmentId);
         if ($updateStmt->execute()) {
-            // Insert notification for the customer
-            $message = "Your appointment on " . date('F j, Y', strtotime($appointmentDate)) . " has been marked as completed.";
-            $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, message) VALUES (?, ?)");
-            $notifStmt->bind_param("is", $customerId, $message);
+            // Insert notification with title and message
+            $notifTitle = 'Appointment Completed';
+            $message = "Your appointment for $serviceName on " . date('F j, Y', strtotime($appointmentDate)) . " has been marked as completed. Thank you!";
+            $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
+            $notifStmt->bind_param("iss", $customerId, $notifTitle, $message);
             $notifStmt->execute();
 
             $_SESSION['message'] = "Appointment marked as completed and customer notified.";

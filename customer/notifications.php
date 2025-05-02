@@ -10,22 +10,18 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id'];
 
-// Fetch notifications for the logged-in customer along with service name
+// Fetch notifications for the logged-in customer
 $query = "
-    SELECT n.*, s.service_name 
-    FROM notifications n
-    LEFT JOIN services s ON n.service_id = s.service_id
-    WHERE n.customer_id = $customer_id
-    ORDER BY n.notification_date DESC
+    SELECT * FROM notifications
+    WHERE customer_id = $customer_id
+    ORDER BY notification_date DESC
 ";
 $result = mysqli_query($conn, $query);
 
-// Check if the query was successful
 if (!$result) {
     die('Error fetching notifications: ' . mysqli_error($conn));
 }
 
-// Store notifications in an array
 $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 
@@ -136,19 +132,12 @@ $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
         <?php else: ?>
             <?php foreach ($notifications as $notification): ?>
                 <div class="notification-item">
-                    <h5>
-                        <?php echo isset($notification['service_name']) && !empty($notification['service_name']) ? htmlspecialchars($notification['service_name']) : 'No title available'; ?>
-                    </h5>
-                    <p>
-                        <?php echo isset($notification['message']) ? htmlspecialchars($notification['message']) : 'No message available'; ?>
-                    </p>
-                    <p class="notification-date">
-                        <?php echo isset($notification['notification_date']) ? date('F j, Y, g:i a', strtotime($notification['notification_date'])) : 'Date not available'; ?>
-                    </p>
-                </div>  
+                    <h5><?= htmlspecialchars($notification['service_name'] ?? 'Notification') ?></h5>
+                    <p><?= htmlspecialchars($notification['message'] ?? '') ?></p>
+                    <p class="notification-date"><?= date('F j, Y, g:i a', strtotime($notification['notification_date'])) ?></p>
+                </div>
             <?php endforeach; ?>
         <?php endif; ?>
-
     </div>
 </div>
 
