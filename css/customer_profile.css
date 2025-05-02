@@ -87,3 +87,8 @@ h3 {
     color: #f77fbe;
     font-weight: bold;
 }
+
+.sidebar .badge {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+}

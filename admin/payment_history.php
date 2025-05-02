@@ -39,10 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
             $custStmt->fetch();
             $custStmt->close();
 
-            // Insert notification for the customer
+            // Insert notification for the customer with service_name = 'Payment'
+            $serviceName = "Payment";
             $notifMsg = "Your payment has been confirmed. Thank you!";
-            $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, message) VALUES (?, ?)");
-            $notifStmt->bind_param("is", $customerId, $notifMsg);
+            $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
+            $notifStmt->bind_param("iss", $customerId, $serviceName, $notifMsg);
             $notifStmt->execute();
             $notifStmt->close();
 
@@ -93,7 +94,6 @@ function formatPaymentStatusBadge($status) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment History</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -124,24 +124,21 @@ function formatPaymentStatusBadge($status) {
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
-        <i class="bi bi-bell-fill"></i> Notifications
-    </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>
 </div>
 
 <div class="main-content">
-    <h2>Payment History</h2>
-    <hr>
-    <div class="payment-history-table table-responsive">
     <?php if (isset($_SESSION['message'])): ?>
         <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
     <?php endif; ?>
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
     <?php endif; ?>
+
+    <h2>Payment History</h2>
+    <div class="payment-history-table table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>

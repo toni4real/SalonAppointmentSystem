@@ -17,8 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $appointment_time = $_POST['appointment_time'];
 
     $current_date = date('Y-m-d');
+    $current_time = date('H:i');
+
     if ($appointment_date < $current_date) {
         $_SESSION['error'] = "Appointment date cannot be in the past.";
+        header("Location: appointment_booking.php");
+        exit();
+    }
+
+    // If appointment is today, time must be in the future
+    if ($appointment_date == $current_date && $appointment_time <= $current_time) {
+        $_SESSION['error'] = "Appointment time must be in the future.";
         header("Location: appointment_booking.php");
         exit();
     }
@@ -28,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: appointment_booking.php");
         exit();
     }
+
 
     $checkExistingService = "
         SELECT 1 
@@ -101,6 +111,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 }
+
+$unreadCount = 0;
+
+if (isset($_SESSION['customer_id'])) {
+    $customer_id = $_SESSION['customer_id'];
+    $result = mysqli_query($conn, "
+        SELECT COUNT(*) AS unread_count 
+        FROM notifications 
+        WHERE customer_id = $customer_id AND is_read = 0
+    ");
+    if ($result) {
+        $data = mysqli_fetch_assoc($result);
+        $unreadCount = $data['unread_count'];
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -207,6 +233,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: white;
             width: 80px;
         }
+
+        .sidebar .badge {
+            font-size: 0.75rem;
+            padding: 5px 8px;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +247,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
     <a class="nav-link active" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
     <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
-    <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
+
+    <a class="nav-link position-relative" href="notifications.php">
+        <i class="bi bi-bell"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
+    </a>
+
+
     <a class="nav-link" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
     <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>

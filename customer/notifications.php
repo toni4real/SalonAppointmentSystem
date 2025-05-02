@@ -10,19 +10,29 @@ if (!isset($_SESSION['customer_id'])) {
 
 $customer_id = $_SESSION['customer_id'];
 
-// Fetch notifications for the logged-in customer
-$query = "
-    SELECT * FROM notifications
-    WHERE customer_id = $customer_id
-    ORDER BY notification_date DESC
-";
+// Fetch notifications
+$query = "SELECT * FROM notifications WHERE customer_id = $customer_id ORDER BY notification_date DESC";
 $result = mysqli_query($conn, $query);
-
 if (!$result) {
     die('Error fetching notifications: ' . mysqli_error($conn));
 }
-
 $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Count unread notifications
+$unreadResult = mysqli_query($conn, "
+    SELECT COUNT(*) AS unread_count 
+    FROM notifications 
+    WHERE customer_id = $customer_id AND is_read = 0
+");
+$unreadData = mysqli_fetch_assoc($unreadResult);
+$unreadCount = $unreadData['unread_count'];
+
+// Mark all notifications as read
+mysqli_query($conn, "
+    UPDATE notifications 
+    SET is_read = 1 
+    WHERE customer_id = $customer_id AND is_read = 0
+");
 ?>
 
 <!DOCTYPE html>
@@ -34,81 +44,87 @@ $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            display: flex;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #f77fbe;
-            height: 100vh;
-            position: fixed;
-            padding: 20px 0;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .sidebar .nav-link {
-            color: white;
-            padding: 12px 20px;
-            width: 100%;
-            text-align: left;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar .nav-link i {
-            margin-right: 10px;
-        }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        .sidebar .btn-danger {
-            margin-top: auto;
-            margin-bottom: 20px;
-            width: 80%;
-            border-radius: 20px;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 40px;
-            width: 100%;
-        }
-        .container {
-            max-width: 800px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-            margin: auto;
-        }
-        h2 {
-            color: #f77fbe;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        .notification-item {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        .notification-item h5 {
-            margin: 0;
-            color: #f77fbe;
-        }
-        .notification-item p {
-            margin: 5px 0;
-        }
-        .notification-date {
-            font-size: 0.8rem;
-            color: #777;
-        }
+                display: flex;
+                margin: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+            }
+            .sidebar {
+                width: 250px;
+                background-color: #f77fbe;
+                height: 100vh;
+                position: fixed;
+                padding: 20px 0;
+                color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .sidebar .nav-link {
+                color: white;
+                padding: 12px 20px;
+                width: 100%;
+                text-align: left;
+                transition: background-color 0.3s ease;
+                display: flex;
+                align-items: center;
+                position: relative;
+            }
+            .sidebar .nav-link i {
+                margin-right: 10px;
+            }
+            .sidebar .nav-link:hover,
+            .sidebar .nav-link.active {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+            .sidebar .btn-danger {
+                margin-top: auto;
+                margin-bottom: 20px;
+                width: 80%;
+                border-radius: 20px;
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 40px;
+                width: 100%;
+            }
+            .container {
+                max-width: 800px;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+                margin: auto;
+            }
+            h2 {
+                color: #f77fbe;
+                margin-bottom: 25px;
+                text-align: center;
+            }
+            .notification-item {
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                background-color: #f9f9f9;
+            }
+            .notification-item h5 {
+                margin: 0;
+                color: #f77fbe;
+            }
+            .notification-item p {
+                margin: 5px 0;
+            }
+            .notification-date {
+                font-size: 0.8rem;
+                color: #777;
+            }
+            .sidebar .badge {
+                font-size: 0.75rem;
+                padding: 5px 8px;
+            }
+
     </style>
 </head>
 <body>
@@ -118,7 +134,17 @@ $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
     <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
     <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
     <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
-    <a class="nav-link active" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
+
+    <!-- Notifications link with red badge -->
+    <a class="nav-link active position-relative" href="notifications.php">
+        <i class="bi bi-bell"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
+    </a>
+
     <a class="nav-link" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
     <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>

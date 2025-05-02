@@ -1,3 +1,22 @@
+<?php
+session_start();
+require_once '../includes/db_connection.php';
+
+$unreadCount = 0;
+
+if (isset($_SESSION['customer_id'])) {
+    $customer_id = $_SESSION['customer_id'];
+    $result = mysqli_query($conn, "
+        SELECT COUNT(*) AS unread_count 
+        FROM notifications 
+        WHERE customer_id = $customer_id AND is_read = 0
+    ");
+    if ($result) {
+        $data = mysqli_fetch_assoc($result);
+        $unreadCount = $data['unread_count'];
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,8 +52,8 @@
             transition: background-color 0.3s ease;
             display: flex;
             align-items: center;
-            text-decoration: none; /* remove underline */
-            color: inherit; /* keep default text color */
+            text-decoration: none;
+            position: relative;
         }
 
         .sidebar .nav-link i {
@@ -72,6 +91,11 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .sidebar .badge {
+            font-size: 0.75rem;
+            padding: 5px 8px;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +106,18 @@
     <a class="nav-link" href="customer_dashboard.php"><i class="bi bi-speedometer2"></i> Your Appointments</a>
     <a class="nav-link" href="appointment_booking.php"><i class="bi bi-calendar-plus-fill"></i> Book Appointment</a>
     <a class="nav-link" href="customer_history.php"><i class="bi bi-clock-history"></i> Appointment History</a>
-    <a class="nav-link" href="notifications.php"><i class="bi bi-bell"></i> Notifications</a>
+
+    <!-- Styled Notifications link without "active" class -->
+    <a class="nav-link position-relative" href="notifications.php">
+        <i class="bi bi-bell"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
+    </a>
+
+    <!-- Help is active -->
     <a class="nav-link active" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
     <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>

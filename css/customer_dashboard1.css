@@ -7,7 +7,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: #f77fbe;
+    background-color: #f77fbe; /* Pink background */
     height: 100vh;
     position: fixed;
     padding: 20px 0;
@@ -52,7 +52,7 @@ body {
 }
 
 .welcome-message h2 {
-    color: #f77fbe;
+    color: #f77fbe; /* Pink color */
     font-weight: bold;
 }
 
@@ -64,13 +64,13 @@ body {
 }
 
 h4 {
-    color: #f77fbe;
+    color: #f77fbe; /* Pink color */
     font-weight: bold;
     margin-bottom: 20px;
 }
 
 .table th {
-    background-color: #f77fbe;
+    background-color: #f77fbe; /* Pink background for table header */
     color: white;
     text-align: center;
 }
@@ -78,3 +78,11 @@ h4 {
 .table td {
     text-align: center;
 }
+
+/* Styled Notifications Link */
+.sidebar .badge {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+}
+
+
