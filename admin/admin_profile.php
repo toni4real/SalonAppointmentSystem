@@ -54,31 +54,34 @@ $firstName = explode(' ', $admin['first_name'])[0];
 <body>
 
 <div class="sidebar d-flex flex-column">
-  <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
-  <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
-    <i class="bi bi-speedometer2"></i> Dashboard
-  </a>
-  <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
-    <i class="bi bi-person-circle"></i> Profile
-  </a>
-  <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
-    <i class="bi bi-calendar-check"></i> Appointments
-  </a>
-  <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
-    <i class="bi bi-credit-card-2-front"></i> Payments
-  </a>
-  <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
-    <i class="bi bi-person-gear"></i> Staff Management
-  </a>
-  <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
-    <i class="bi bi-person-lines-fill"></i> Staff Attendance
-  </a>
-  <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
-    <i class="bi bi-stars"></i> Services
-  </a>
-  <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
-    <i class="bi bi-box-arrow-right"></i> Logout
-  </a>
+    <h4 class="text-white mb-4">Hi, <?= htmlspecialchars($firstName) ?> <span class="wave">👋</span></h4>
+    <a class="nav-link <?= ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="admin_dashboard.php">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a class="nav-link <?= ($current_page == 'admin_profile.php') ? 'active' : ''; ?>" href="admin_profile.php">
+        <i class="bi bi-person-circle"></i> Profile
+    </a>
+    <a class="nav-link <?= ($current_page == 'admin_appointments.php') ? 'active' : ''; ?>" href="admin_appointments.php">
+        <i class="bi bi-calendar-check"></i> Appointments
+    </a>
+    <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
+        <i class="bi bi-credit-card-2-front"></i> Payments
+    </a>
+    <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
+        <i class="bi bi-person-gear"></i> Staff Management
+    </a>
+    <a class="nav-link <?= ($current_page == 'staff_attendance.php') ? 'active' : ''; ?>" href="staff_attendance.php">
+        <i class="bi bi-person-lines-fill"></i> Staff Attendance
+    </a>
+    <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
+        <i class="bi bi-stars"></i> Services
+    </a>
+    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
+        <i class="bi bi-bell-fill"></i> Notifications
+    </a>
+    <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
+        <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
 </div>
 
 <div class="main-content">
