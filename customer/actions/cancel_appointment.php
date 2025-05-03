@@ -41,6 +41,27 @@ if (isset($_GET['id'])) {
         $insertNotif = $conn->prepare("INSERT INTO notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
         $insertNotif->bind_param("iss", $customerId, $notifTitle, $message);
         $insertNotif->execute();
+
+        // Fetch the customer's name first
+        $getCustomer = $conn->prepare("SELECT first_name, last_name FROM customers WHERE customer_id = ?");
+        $getCustomer->bind_param("i", $customerId);
+        $getCustomer->execute();
+        $customerResult = $getCustomer->get_result()->fetch_assoc();
+
+        $customerFirstName = $customerResult['first_name'];
+        $customerLastName = $customerResult['last_name'];
+        $customerFullName = $customerFirstName . ' ' . $customerLastName;
+
+        // Prepare the notification
+        $notifTitle = "Appointment Cancelled";
+        $customerMessage = "$customerFullName has cancelled their appointment for $serviceName on $date at $time.";
+
+        // Insert the notification into admin_notifications
+        $insertCustomerNotif = $conn->prepare("INSERT INTO admin_notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
+        $insertCustomerNotif->bind_param("iss", $customerId, $notifTitle, $customerMessage);
+        $insertCustomerNotif->execute();
+
+        
     }
 }
 

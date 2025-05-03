@@ -41,12 +41,9 @@ $unreadCount = 0;
 if ($admin_id) {
     $stmt = $conn->prepare("
         SELECT COUNT(*) AS unread_count
-        FROM notifications n
-        LEFT JOIN admin_notification_views av
-        ON n.notification_id = av.notification_id AND av.admin_id = ?
-        WHERE av.notification_id IS NULL
+        FROM admin_notifications
+        WHERE is_read = 0
     ");
-    $stmt->bind_param("i", $admin_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();

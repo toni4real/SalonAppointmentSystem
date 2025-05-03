@@ -14,6 +14,31 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
+$admin_id = $_SESSION['admin_id'];
+
+// Get admin first name
+$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result_admin = $stmt->get_result();
+$adminData = $result_admin->fetch_assoc();
+$firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_name'])[0] : 'Admin';
+
+// Get unread notification count for this admin
+$unreadCount = 0;
+if ($admin_id) {
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) AS unread_count
+        FROM admin_notifications
+        WHERE admin_id = ? AND is_read = 0
+    ");
+    $stmt->bind_param("i", $admin_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $unreadCount = $data['unread_count'] ?? 0;
+}
+
 // Handle manual payment confirmation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
     $paymentId = $_POST['mark_paid_id'];
@@ -39,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
             $custStmt->fetch();
             $custStmt->close();
 
-            // Insert notification for the customer with service_name = 'Payment'
+            // Insert customer notification
             $serviceName = "Payment";
             $notifMsg = "Your payment has been confirmed. Thank you!";
             $notifStmt = $conn->prepare("INSERT INTO notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
@@ -62,37 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid_id'])) {
 $query = "SELECT p.*, c.first_name, c.last_name, a.payment_status
           FROM payments p
           JOIN appointments a ON p.appointment_id = a.appointment_id
-          JOIN customers c ON a.customer_id = c.customer_id";
-$result = mysqli_query($conn, $query);
+          JOIN customers c ON a.customer_id = c.customer_id
+          WHERE a.status != 'Cancelled'";
 
+$result = mysqli_query($conn, $query);
 if (!$result) {
     die('Query failed: ' . mysqli_error($conn));
 }
 
-// Get admin first name
-$admin_id = $_SESSION['admin_id'];
-$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
-$stmt->bind_param("i", $admin_id);
-$stmt->execute();
-$result_admin = $stmt->get_result();
-$adminData = $result_admin->fetch_assoc();
-$firstName = !empty($adminData['first_name']) ? explode(' ', $adminData['first_name'])[0] : 'Admin';
-
-// Fetch unread notification count (admin-aware)
-$unreadCount = 0;
-$countQuery = $conn->prepare("
-    SELECT COUNT(*) AS unread_count
-    FROM notifications n
-    LEFT JOIN admin_notification_views av
-    ON n.notification_id = av.notification_id AND av.admin_id = ?
-    WHERE av.notification_id IS NULL
-");
-$countQuery->bind_param("i", $admin_id);
-$countQuery->execute();
-$countResult = $countQuery->get_result()->fetch_assoc();
-$unreadCount = $countResult['unread_count'];
-
-// Function to format payment status badge
+// Format badge function
 function formatPaymentStatusBadge($status) {
     if ($status === 'Paid') {
         return '<span class="badge bg-success"><i class="bi bi-credit-card-2-back"></i> Paid</span>';

@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-
     $checkExistingService = "
         SELECT 1 
         FROM appointments a
@@ -96,6 +95,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmtPayment = mysqli_prepare($conn, $insertPayment);
             mysqli_stmt_bind_param($stmtPayment, 'isds', $appointment_id, $payment_method, $price, $payment_date);
             mysqli_stmt_execute($stmtPayment);
+
+            // Fetch the customer's full name
+            $getCustomer = $conn->prepare("SELECT first_name, last_name FROM customers WHERE customer_id = ?");
+            $getCustomer->bind_param("i", $customer_id);
+            $getCustomer->execute();
+            $customerResult = $getCustomer->get_result()->fetch_assoc();
+
+            $customerFullName = $customerResult['first_name'] . ' ' . $customerResult['last_name'];
+
+            // Create notification
+            $notifTitle = "New Appointment Booked";
+            $customerMessage = "{$customerFullName} has booked a new appointment on {$appointment_date} at {$appointment_time}.";
+
+
+            // Insert into admin_notifications
+            $insertCustomerNotif = $conn->prepare("INSERT INTO admin_notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
+            $insertCustomerNotif->bind_param("iss", $customer_id, $notifTitle, $customerMessage);
+            $insertCustomerNotif->execute();
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
             $_SESSION['message'] = "Appointment booked successfully.";
             header("Location: appointment_booking.php");
@@ -256,7 +286,6 @@ if (isset($_SESSION['customer_id'])) {
             </span>
         <?php endif; ?>
     </a>
-
 
     <a class="nav-link" href="help.php"><i class="bi bi-question-circle"></i> Help</a>
     <a class="btn btn-danger text-white" href="customer_logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>

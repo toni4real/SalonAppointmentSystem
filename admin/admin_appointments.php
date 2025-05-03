@@ -8,19 +8,15 @@ $unreadCount = 0;
 
 if (isset($_SESSION['admin_id'])) {
     $admin_id = $_SESSION['admin_id'];
-    $countQuery = $conn->prepare("
+    $stmt = $conn->prepare("
         SELECT COUNT(*) AS unread_count
-        FROM notifications n
-        LEFT JOIN admin_notification_views av
-        ON n.notification_id = av.notification_id AND av.admin_id = ?
-        WHERE av.viewed_at IS NULL
+        FROM admin_notifications
+        WHERE is_read = 0
     ");
-    $countQuery->bind_param("i", $admin_id);
-    $countQuery->execute();
-    $result = $countQuery->get_result();
-    if ($row = $result->fetch_assoc()) {
-        $unreadCount = $row['unread_count'];
-    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $unreadCount = $data['unread_count'];
 }
 
 $current_page = basename($_SERVER['PHP_SELF']);

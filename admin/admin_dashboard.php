@@ -37,20 +37,18 @@ $pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE pa
 
 // Get unread notification count for the admin
 $unreadCount = 0;
-$countQuery = $conn->prepare("
-    SELECT COUNT(*) AS unread_count
-    FROM notifications n
-    LEFT JOIN admin_notification_views av
-    ON n.notification_id = av.notification_id AND av.admin_id = ?
-    WHERE av.notification_id IS NULL
-");
-$countQuery->bind_param("i", $admin_id);
-$countQuery->execute();
-$countResult = $countQuery->get_result()->fetch_assoc();
-$unreadCount = $countResult['unread_count'];
 
-
-
+if ($admin_id) {
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) AS unread_count
+        FROM admin_notifications
+        WHERE is_read = 0
+    ");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $unreadCount = $data['unread_count'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -104,7 +102,6 @@ $unreadCount = $countResult['unread_count'];
     </a>
 </div>
 
-<!-- Main content -->
 <div class="main-content">
         <h2>Dashboard Overview</h2>
         <hr>
@@ -134,8 +131,7 @@ $unreadCount = $countResult['unread_count'];
     <div class="container mt-4">
     <h4 class="mt-5 mb-3">Performance Metrics</h4>
     <hr>
-    <!-- Row 1: Full-width or 6-column wide side-by-side -->
-        <div class="row">
+    <div class="row">
             <div class="col-md-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -156,8 +152,7 @@ $unreadCount = $countResult['unread_count'];
 
     <h4 class="mt-5 mb-3">Insights</h4>
     <hr>
-    <!-- Row 2: Smaller charts (side-by-side doughnut and pie) -->
-        <div class="row">
+    <div class="row">
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
@@ -171,9 +166,10 @@ $unreadCount = $countResult['unread_count'];
                     <div class="card-body">
                     <h5 class="card-title">Appointment Status</h5>
                     <canvas id="appointmentStatusChart" height="200"></canvas>
+                    </div>
                 </div>
             </div>
-        </div>
+    </div>
     </div>
 
 </div>
@@ -273,32 +269,30 @@ fetch('charts/appointment_status_distribution.php')
 fetch('charts/revenue_per_month.php')
   .then(response => response.json())
   .then(data => {
-    const ctx3 = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctx3, {
+    const ctx4 = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx4, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [{
-          label: 'Monthly Revenue (₱)',
+          label: 'Revenue per Month',
           data: data,
           fill: false,
           borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.3
+          tension: 0.1
         }]
       },
       options: {
         responsive: true,
         scales: {
-          y: {
-            beginAtZero: true
-          }
+          y: { beginAtZero: true }
         }
       }
     });
   });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
