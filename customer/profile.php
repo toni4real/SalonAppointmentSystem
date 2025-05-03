@@ -89,7 +89,7 @@ if (isset($_SESSION['customer_id'])) {
         <a class="nav-link position-relative" href="notifications.php">
         <i class="bi bi-bell"></i> Notifications
         <?php if ($unreadCount > 0): ?>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            <span class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger">
                 <?= $unreadCount ?>
             </span>
         <?php endif; ?>
