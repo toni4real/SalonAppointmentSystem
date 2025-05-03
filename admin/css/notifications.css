@@ -106,3 +106,8 @@ body {
 .card-header {
     background-color: #6f42c1;
   }
+
+  .sidebar .badge {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+}

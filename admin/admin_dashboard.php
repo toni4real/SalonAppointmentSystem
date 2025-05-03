@@ -34,6 +34,23 @@ $customerCount = getCount("SELECT COUNT(*) as total FROM customers");
 $staffCount = getCount("SELECT COUNT(*) as total FROM staff");
 $appointmentCount = getCount("SELECT COUNT(*) as total FROM appointments");
 $pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE payment_status = 'pending'");
+
+// Get unread notification count for the admin
+$unreadCount = 0;
+$countQuery = $conn->prepare("
+    SELECT COUNT(*) AS unread_count
+    FROM notifications n
+    LEFT JOIN admin_notification_views av
+    ON n.notification_id = av.notification_id AND av.admin_id = ?
+    WHERE av.notification_id IS NULL
+");
+$countQuery->bind_param("i", $admin_id);
+$countQuery->execute();
+$countResult = $countQuery->get_result()->fetch_assoc();
+$unreadCount = $countResult['unread_count'];
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -72,9 +89,16 @@ $pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE pa
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
+
+    <a class="nav-link position-relative" href="notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
     </a>
+
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>

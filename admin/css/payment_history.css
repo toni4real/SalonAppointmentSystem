@@ -135,3 +135,8 @@ body {
 .btn-success, .btn-secondary {
   border-radius: 8px;
 }
+
+.sidebar .badge {
+  font-size: 0.75rem;
+  padding: 5px 8px;
+}

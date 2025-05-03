@@ -138,3 +138,8 @@ body {
 .container {
   padding: 0 50px;
 }
+
+.sidebar .badge {
+  font-size: 0.75rem;
+  padding: 5px 8px;
+}

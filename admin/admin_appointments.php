@@ -4,6 +4,25 @@ date_default_timezone_set('Asia/Manila');
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
+$unreadCount = 0;
+
+if (isset($_SESSION['admin_id'])) {
+    $admin_id = $_SESSION['admin_id'];
+    $countQuery = $conn->prepare("
+        SELECT COUNT(*) AS unread_count
+        FROM notifications n
+        LEFT JOIN admin_notification_views av
+        ON n.notification_id = av.notification_id AND av.admin_id = ?
+        WHERE av.viewed_at IS NULL
+    ");
+    $countQuery->bind_param("i", $admin_id);
+    $countQuery->execute();
+    $result = $countQuery->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $unreadCount = $row['unread_count'];
+    }
+}
+
 $current_page = basename($_SERVER['PHP_SELF']);
 
 if (!isset($_SESSION['admin_id'])) {
@@ -53,6 +72,7 @@ $result_admin = $stmt->get_result();
 $adminData = $result_admin->fetch_assoc();
 
 $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
+
 ?>
 
 <!DOCTYPE html>
@@ -90,9 +110,16 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
+
+    <a class="nav-link position-relative <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
     </a>
+
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>
@@ -102,12 +129,12 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
     <h2>Manage Appointments</h2>
     <hr>
     <div class="appointments-table table-responsive">
-    <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
-    <?php endif; ?>
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+        <?php endif; ?>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -121,13 +148,13 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
             </thead>
             <tbody>
                 <?php 
-                $counter = 1; // Start counting appointments from 1
+                $counter = 1;
                 while ($appointment = mysqli_fetch_assoc($result)) { 
                     $appointmentDate = new DateTime($appointment['appointment_date'] . ' ' . $appointment['appointment_time']);
                     $appointmentDateFormatted = $appointmentDate->format('F j, Y \a\t g:i A');
                 ?>
                     <tr>
-                        <td><?= $counter++; ?></td> <!-- Custom appointment ID starting from 1 -->
+                        <td><?= $counter++; ?></td>
                         <td><?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?></td>
                         <td><?= htmlspecialchars($appointment['service_name']); ?></td>
                         <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>

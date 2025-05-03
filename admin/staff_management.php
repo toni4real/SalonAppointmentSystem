@@ -27,6 +27,25 @@ if (!$staffResult) {
 }
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+$unreadCount = 0;
+
+if ($admin_id) {
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) AS unread_count
+        FROM notifications n
+        LEFT JOIN admin_notification_views av
+        ON n.notification_id = av.notification_id AND av.admin_id = ?
+        WHERE av.notification_id IS NULL
+    ");
+    $stmt->bind_param("i", $admin_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $unreadCount = $data['unread_count'];
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -64,9 +83,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
+    
+    <a class="nav-link position-relative" href="notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
     </a>
+
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
     </a>

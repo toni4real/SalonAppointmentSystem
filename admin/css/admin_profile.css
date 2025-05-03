@@ -147,3 +147,8 @@ body {
   background-color: #5a6268;
   color: #ffffff;
 }
+
+.sidebar .badge {
+  font-size: 0.75rem;
+  padding: 5px 8px;
+}

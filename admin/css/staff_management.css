@@ -208,3 +208,8 @@ body {
     display: flex;
     justify-content: flex-end;
   }
+
+  .sidebar .badge {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+}
