@@ -166,6 +166,7 @@ function formatPaymentStatusBadge($status) {
     <?php endif; ?>
 
     <h2>Payment History</h2>
+    <hr>
     <div class="payment-history-table table-responsive">
         <table class="table table-striped">
             <thead>

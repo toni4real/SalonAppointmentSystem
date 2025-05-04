@@ -97,7 +97,7 @@ if ($admin_id) {
 </div>
 
 <div class="main-content">
-    <h2 class="mb-4">Manage Staff Members</h2>
+    <h2>Manage Staff Members</h2>
     <hr>
     <div class="staff-management-table table-responsive">
         <button class="btn mb-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">
