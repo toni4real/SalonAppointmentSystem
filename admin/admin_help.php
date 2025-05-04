@@ -3,16 +3,12 @@ session_start();
 require_once '../includes/db_connection.php';
 require_once '../includes/auth.php';
 
-date_default_timezone_set('Asia/Manila');
-
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$firstName = $_SESSION['admin_first_name'] ?? 'Admin';
-$today = date('F j, Y');       // Display on page (ex: April 25, 2025)
-$today_db = date('Y-m-d');      // Pass in URL (ex: 2025-04-25)
-
-// Fetch all staff (no filtering by status)
-$staffList = mysqli_query($conn, "SELECT staff_id, first_name, last_name FROM staff");
+if (!isset($_SESSION['admin_id'])) {
+    header('Location: admin_login.php');
+    exit();
+}
 
 $admin_id = $_SESSION['admin_id'];
 
@@ -24,6 +20,7 @@ $admin_result = $stmt->get_result();
 $admin_data = $admin_result->fetch_assoc();
 $firstName = explode(' ', $admin_data['first_name'])[0];
 
+// Get unread notification count for the admin
 $unreadCount = 0;
 
 if ($admin_id) {
@@ -37,17 +34,18 @@ if ($admin_id) {
     $data = $result->fetch_assoc();
     $unreadCount = $data['unread_count'];
 }
+
+$firstName = explode(' ', $admin_data['first_name'])[0];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Staff Attendance</title>
+    <title>Admin Help</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../admin/css/staff_attendance.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../admin/css/admin_help.css">
 </head>
 <body>
 
@@ -91,63 +89,22 @@ if ($admin_id) {
 </div>
 
 <div class="main-content">
-  <h2>Staff Attendance for <?= $today ?></h2>
-  <hr>
-  <form method="POST" action="attendance/save_attendance.php">
-    <div class="staff-attendance-table table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Present</th>
-            <th>Absent</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php 
-          $counter = 1;
-          while ($staff = mysqli_fetch_assoc($staffList)) : ?>
-            <tr>
-              <td><?= $counter++ ?></td>
-              <td><?= htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']) ?></td>
-              <td>
-                <input type="radio" name="attendance[<?= $staff['staff_id'] ?>]" value="Present" onchange="updateStatus(this)">
-              </td>
-              <td>
-                <input type="radio" name="attendance[<?= $staff['staff_id'] ?>]" value="Absent" onchange="updateStatus(this)">
-              </td>
-              <td id="status-<?= $staff['staff_id'] ?>">-</td>
-            </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
+    <div class="container">
+        <h2>Need Help?</h2>
+        <hr>
+        <p>If you need assistance or encounter an issue while using the admin dashboard, please contact support:</p>
+        <ul>
+            <li>Email: <a href="mailto:marketing@theatriumsalons.com">marketing@theatriumsalons.com</a></li>
+            <li>Phone: +63 951 784 4284</li>
+            <li>Facebook: <a href="https://www.facebook.com/TouchedbyAtriumCastillejos" target="_blank">https://www.facebook.com/TouchedbyAtriumCastillejos</a></li>
+        </ul>
 
-      <div class="text-end">
-        <button type="submit" class="btn save-btn">
-          <i class="bi bi-check-circle me-1"></i> Save Changes
-        </button>
-      </div>
-  </form>
-
-        <?php if (isset($_GET['saved']) && $_GET['saved'] === '1') : ?>
-        <div class="text-center mt-3">
-        <a href="attendance/generate_attendance.php?date=<?= $today_db ?>" class="btn btn-secondary">
-          <i class="bi bi-download"></i> Download Attendance
+        <p>You can also download the full Admin User Guide below:</p>
+        <a class="btn-pdf" href="files/admin_user_guide.pdf" target="_blank">
+            <i class="bi bi-file-earmark-arrow-down"></i> Download Admin User Guide (PDF)
         </a>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
-
-  <script>
-    function updateStatus(input) {
-      const staffId = input.name.match(/\d+/)[0];
-      const statusCell = document.getElementById('status-' + staffId);
-      statusCell.textContent = input.value;
-    }
-  </script>
 
 </body>
 </html>

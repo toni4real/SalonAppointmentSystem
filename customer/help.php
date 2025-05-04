@@ -127,8 +127,9 @@ if (isset($_SESSION['customer_id'])) {
     <p>If you need assistance with booking, payments, or your account, feel free to reach out!</p>
 
     <ul>
-        <li>Email: <a href="mailto:salonsupport@example.com">salonsupport@example.com</a></li>
-        <li>Phone: +63 912 345 6789</li>
+    <li>Email: <a href="mailto:marketing@theatriumsalons.com">marketing@theatriumsalons.com</a></li>
+        <li>Phone: +63 951 784 4284</li>
+        <li>Facebook: <a href="https://www.facebook.com/TouchedbyAtriumCastillejos" target="_blank">https://www.facebook.com/TouchedbyAtriumCastillejos</a></li>
         <li>Operating Hours: Mon - Sat, 9:00 AM to 6:00 PM</li>
     </ul>
 

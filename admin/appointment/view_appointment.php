@@ -41,6 +41,21 @@ $stmt->execute();
 $result_admin = $stmt->get_result();
 $adminData = $result_admin->fetch_assoc();
 
+// Get unread notification count for the admin
+$unreadCount = 0;
+
+if ($admin_id) {
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) AS unread_count
+        FROM admin_notifications
+        WHERE is_read = 0
+    ");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $unreadCount = $data['unread_count'];
+}
+
 if ($adminData) {
     $firstName = explode(' ', $adminData['first_name'])[0];
 } else {
@@ -114,6 +129,14 @@ function formatPaymentStatusBadge($status) {
     </a>
     <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="../notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
+        <?php if ($unreadCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
+    </a>
+    <a class="nav-link <?= ($current_page == 'admin_help.php') ? 'active' : ''; ?>" href="../admin_help.php">
+      <i class="bi bi-question-circle"></i> Help</a>
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="../admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout

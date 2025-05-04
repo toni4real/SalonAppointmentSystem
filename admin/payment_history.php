@@ -141,13 +141,16 @@ function formatPaymentStatusBadge($status) {
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
-    <a class="nav-link position-relative <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
+    <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
         <?php if ($unreadCount > 0): ?>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 <?= $unreadCount ?>
             </span>
         <?php endif; ?>
+    </a>
+    <a class="nav-link <?= ($current_page == 'admin_help.php') ? 'active' : ''; ?>" href="admin_help.php">
+      <i class="bi bi-question-circle"></i> Help
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
