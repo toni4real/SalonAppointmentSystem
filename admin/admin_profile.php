@@ -21,11 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (!empty($new_password)) {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("UPDATE admins SET first_name = ?, last_name = ?, email = ?, password = ? WHERE admin_id = ?");
-        $stmt->bind_param("ssssi", $first_name, $last_name, $email, $hashed_password, $admin_id);
+        $stmt = $conn->prepare("UPDATE admins SET first_name = ?, last_name = ?, phone = ?, email = ?, password = ? WHERE admin_id = ?");
+        $stmt->bind_param("sssssi", $first_name, $last_name, $phone, $email, $hashed_password, $admin_id);
     } else {
-        $stmt = $conn->prepare("UPDATE admins SET first_name = ?, last_name = ?, email = ? WHERE admin_id = ?");
-        $stmt->bind_param("sssi", $first_name, $last_name, $email, $admin_id);
+        $stmt = $conn->prepare("UPDATE admins SET first_name = ?, last_name = ?, phone = ?, email = ? WHERE admin_id = ?");
+        $stmt->bind_param("ssssi", $first_name, $last_name, $phone, $email, $admin_id);
     }
 
     $success = $stmt->execute() ? "Profile updated successfully." : "Failed to update profile.";
@@ -40,15 +40,10 @@ $admin = $result->fetch_assoc();
 
 $firstName = explode(' ', $admin['first_name'])[0];
 
-// Updated unread notification count query
+// Get unread notification count
 $unreadCount = 0;
-
 if ($admin_id) {
-    $stmt = $conn->prepare("
-        SELECT COUNT(*) AS unread_count
-        FROM admin_notifications
-        WHERE is_read = 0
-    ");
+    $stmt = $conn->prepare("SELECT COUNT(*) AS unread_count FROM admin_notifications WHERE is_read = 0");
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
@@ -59,12 +54,12 @@ if ($admin_id) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Profile</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../admin/css/admin_profile.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="../admin/css/admin_profile.css"/>
 </head>
 <body>
 
@@ -100,7 +95,7 @@ if ($admin_id) {
         <?php endif; ?>
     </a>
     <a class="nav-link <?= ($current_page == 'admin_help.php') ? 'active' : ''; ?>" href="admin_help.php">
-      <i class="bi bi-question-circle"></i> Help
+        <i class="bi bi-question-circle"></i> Help
     </a>
     <a class="nav-link btn btn-danger mt-auto text-white" href="admin_logout.php">
         <i class="bi bi-box-arrow-right"></i> Logout
@@ -115,6 +110,7 @@ if ($admin_id) {
   <?php elseif (isset($error)): ?>
     <div class="alert alert-danger"><?= $error ?></div>
   <?php endif; ?>
+
   <div class="profile-card">
     <form method="POST" action="">
       <div class="row">
@@ -144,7 +140,7 @@ if ($admin_id) {
       </div>
 
       <div class="d-flex justify-content-end">
-        <button type="submit" class="btn save-btn"> 
+        <button type="submit" class="btn save-btn">
           <i class="bi bi-check-circle me-1"></i> Save Changes
         </button>
         <a href="admin_dashboard.php" class="btn cancel-btn">Cancel</a>
