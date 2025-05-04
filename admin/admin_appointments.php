@@ -169,7 +169,16 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
                                     <i class="bi bi-check2-circle"></i> Complete
                                 </a>
                             <?php } ?>
+                            <?php if ($appointment['status'] === 'Pending' || $appointment['status'] === 'Cancelled') { ?>
+    <a href="appointment/delete_appointment.php?id=<?= $appointment['appointment_id']; ?>" 
+       class="btn btn-sm btn-danger"
+       onclick="return confirm('Are you sure you want to delete this appointment?');">
+        <i class="bi bi-trash"></i> Delete
+    </a>
+<?php } ?>
+
                         </td>
+
                     </tr>
                 <?php } ?>
             </tbody>
