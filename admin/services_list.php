@@ -49,14 +49,10 @@ if ($admin_id) {
     $data = $result->fetch_assoc();
     $unreadCount = $data['unread_count'];
 }
-
-
-
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Manage Services</title>
@@ -65,7 +61,6 @@ if ($admin_id) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../admin/css/services_list.css">
 </head>
-
 <body>
 
 <div class="sidebar d-flex flex-column">
@@ -81,6 +76,9 @@ if ($admin_id) {
     </a>
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
+    </a>
+    <a class="nav-link <?= ($current_page == 'admin_walkins.php') ? 'active' : ''; ?>" href="admin_walkins.php">
+        <i class="bi bi-door-open"></i> Walk-ins
     </a>
     <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
         <i class="bi bi-person-gear"></i> Staff Management
@@ -220,7 +218,7 @@ if ($admin_id) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn">Add</button>
+                    <button type="submit" class="btn">Add Service</button>
                     <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>

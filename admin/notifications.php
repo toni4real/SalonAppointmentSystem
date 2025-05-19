@@ -65,6 +65,9 @@ $conn->query("UPDATE admin_notifications SET is_read = 1 WHERE is_read = 0");
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
+    <a class="nav-link <?= ($current_page == 'admin_walkins.php') ? 'active' : ''; ?>" href="admin_walkins.php">
+        <i class="bi bi-door-open"></i> Walk-ins
+    </a>
     <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
         <i class="bi bi-person-gear"></i> Staff Management
     </a>

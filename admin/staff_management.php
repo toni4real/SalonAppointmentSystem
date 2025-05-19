@@ -71,6 +71,9 @@ if ($admin_id) {
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
+    <a class="nav-link <?= ($current_page == 'admin_walkins.php') ? 'active' : ''; ?>" href="admin_walkins.php">
+        <i class="bi bi-door-open"></i> Walk-ins
+    </a>
     <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
         <i class="bi bi-person-gear"></i> Staff Management
     </a>
@@ -273,7 +276,7 @@ if ($admin_id) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" name="add_staff" class="btn">Add</button>
+                    <button type="submit" name="add_staff" class="btn">Add Staff</button>
                     <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>

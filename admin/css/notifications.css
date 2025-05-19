@@ -68,6 +68,11 @@ body {
   align-items: center;
   font-weight: 500;
   gap: 6px;
+
+  /* Fixes for overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar .nav-link:hover {

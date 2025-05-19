@@ -26,6 +26,18 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
+// Functions for type badges
+function formatTypeBadge($type) {
+    switch (strtolower($type)) {
+        case 'online':
+            return '<span class="badge bg-primary"><i class="bi bi-person-video"></i> Online</span>';
+        case 'walk-in':
+            return '<span class="badge bg-secondary"><i class="bi bi-arrow-right-circle"></i> Walk-In</span>';
+        default:
+            return '<span class="badge bg-dark">Unknown</span>';
+    }
+}
+
 // Functions for status badges
 function formatStatusBadge($status) {
     switch ($status) {
@@ -52,6 +64,7 @@ $query = "
     FROM appointments a
     JOIN customers c ON a.customer_id = c.customer_id
     JOIN services s ON a.service_id = s.service_id
+    ORDER BY a.appointment_date DESC, a.appointment_time DESC
 ";
 $result = mysqli_query($conn, $query);
 
@@ -97,6 +110,9 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
     <a class="nav-link <?= ($current_page == 'payment_history.php') ? 'active' : ''; ?>" href="payment_history.php">
         <i class="bi bi-credit-card-2-front"></i> Payments
     </a>
+    <a class="nav-link <?= ($current_page == 'admin_walkins.php') ? 'active' : ''; ?>" href="admin_walkins.php">
+        <i class="bi bi-door-open"></i> Walk-ins
+    </a>
     <a class="nav-link <?= ($current_page == 'staff_management.php') ? 'active' : ''; ?>" href="staff_management.php">
         <i class="bi bi-person-gear"></i> Staff Management
     </a>
@@ -139,6 +155,7 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
                     <th>Customer Name</th>
                     <th>Service</th>
                     <th>Date & Time</th>
+                    <th>Appointment Type</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -155,6 +172,7 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
                         <td><?= htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']); ?></td>
                         <td><?= htmlspecialchars($appointment['service_name']); ?></td>
                         <td><?= htmlspecialchars($appointmentDateFormatted); ?></td>
+                        <td><?= formatTypeBadge($appointment['type']); ?></td>
                         <td><?= formatStatusBadge($appointment['status']); ?></td>
                         <td>
                             <a href="appointment/view_appointment.php?id=<?= $appointment['appointment_id']; ?>" class="btn btn-sm complete-btn">
@@ -171,15 +189,13 @@ $firstName = $adminData ? explode(' ', $adminData['first_name'])[0] : "Admin";
                                 </a>
                             <?php } ?>
                             <?php if ($appointment['status'] === 'Pending' || $appointment['status'] === 'Cancelled') { ?>
-    <a href="appointment/delete_appointment.php?id=<?= $appointment['appointment_id']; ?>" 
-       class="btn btn-sm btn-danger"
-       onclick="return confirm('Are you sure you want to delete this appointment?');">
-        <i class="bi bi-trash"></i> Delete
-    </a>
-<?php } ?>
-
+                                <a href="appointment/delete_appointment.php?id=<?= $appointment['appointment_id']; ?>" 
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this appointment?');">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            <?php } ?>
                         </td>
-
                     </tr>
                 <?php } ?>
             </tbody>

@@ -14,14 +14,30 @@ body {
 }
 
 @keyframes wave-animation {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .sidebar {
@@ -52,6 +68,11 @@ body {
   align-items: center;
   font-weight: 500;
   gap: 6px;
+
+  /* Fixes for overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar .nav-link:hover {
@@ -70,6 +91,7 @@ body {
   background-color: #dc3545;
   border-radius: 30px;
   padding: 10px 20px;
+  margin-top: auto;
   text-align: center;
   margin: 250px 0 10px 0;
   font-weight: 600;

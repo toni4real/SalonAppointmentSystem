@@ -24,70 +24,7 @@ $query = mysqli_query($conn, "SELECT a.*, s.service_name, st.name AS staff_name
     <title>Appointment History</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #f77fbe;
-            height: 100vh;
-            position: fixed;
-            padding: 20px 0;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .sidebar .nav-link {
-            color: white;
-            padding: 12px 20px;
-            width: 100%;
-            text-align: left;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-        }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .sidebar .btn-danger {
-            margin-top: auto;
-            margin-bottom: 20px;
-            width: 80%;
-            border-radius: 20px;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            width: 100%;
-        }
-
-        h3 {
-            color: #f77fbe;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .table-container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" href="../customer/css/appointment_booking.css">
 </head>
 <body>
 

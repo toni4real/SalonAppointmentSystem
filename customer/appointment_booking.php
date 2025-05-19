@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $service_id = $_POST['service_id'];
     $appointment_date = $_POST['appointment_date'];
     $appointment_time = $_POST['appointment_time'];
-
     $current_date = date('Y-m-d');
     $current_time = date('H:i');
 
@@ -25,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // If appointment is today, time must be in the future
     if ($appointment_date == $current_date && $appointment_time <= $current_time) {
         $_SESSION['error'] = "Appointment time must be in the future.";
         header("Location: appointment_booking.php");
@@ -65,6 +63,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $service = mysqli_fetch_assoc($serviceResult);
     $price = $service['price'];
 
+    $dailyLimit = 10;
+
+    $checkLimit = mysqli_query($conn, "
+        SELECT COUNT(*) AS total_appointments
+        FROM appointments
+        WHERE appointment_date = '$appointment_date'
+        AND status != 'Cancelled'
+    ");
+
+    $limitData = mysqli_fetch_assoc($checkLimit);
+    if ($limitData['total_appointments'] >= $dailyLimit) {
+        $_SESSION['error'] = "Sorry, the maximum number of appointments for this day has been reached. Please choose another date.";
+        header("Location: appointment_booking.php");
+        exit();
+    }
+
     $staffQuery = mysqli_query($conn, "
         SELECT s.staff_id, COUNT(a.appointment_id) AS appointment_count
         FROM staff s
@@ -80,8 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($staff) {
         $staff_id = $staff['staff_id'];
 
-        $insertAppointment = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status)
-                              VALUES (?, ?, ?, ?, ?, 'pending')";
+        $insertAppointment = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status, booking_type)
+                              VALUES (?, ?, ?, ?, ?, 'pending', 'online')";
         $stmt = mysqli_prepare($conn, $insertAppointment);
         mysqli_stmt_bind_param($stmt, 'iiiss', $customer_id, $staff_id, $service_id, $appointment_date, $appointment_time);
 
@@ -96,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_bind_param($stmtPayment, 'isds', $appointment_id, $payment_method, $price, $payment_date);
             mysqli_stmt_execute($stmtPayment);
 
-            // Fetch the customer's full name
             $getCustomer = $conn->prepare("SELECT first_name, last_name FROM customers WHERE customer_id = ?");
             $getCustomer->bind_param("i", $customer_id);
             $getCustomer->execute();
@@ -104,28 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $customerFullName = $customerResult['first_name'] . ' ' . $customerResult['last_name'];
 
-            // Create notification
             $notifTitle = "New Appointment Booked";
             $customerMessage = "{$customerFullName} has booked a new appointment on {$appointment_date} at {$appointment_time}.";
 
-
-            // Insert into admin_notifications
             $insertCustomerNotif = $conn->prepare("INSERT INTO admin_notifications (customer_id, service_name, message) VALUES (?, ?, ?)");
             $insertCustomerNotif->bind_param("iss", $customer_id, $notifTitle, $customerMessage);
             $insertCustomerNotif->execute();
-
-
-
-
-
-
-
-
-
-
-
-
-            
 
             $_SESSION['message'] = "Appointment booked successfully.";
             header("Location: appointment_booking.php");
@@ -156,7 +153,6 @@ if (isset($_SESSION['customer_id'])) {
         $unreadCount = $data['unread_count'];
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -166,109 +162,7 @@ if (isset($_SESSION['customer_id'])) {
     <title>Book Appointment</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body {
-            display: flex;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #f77fbe;
-            height: 100vh;
-            position: fixed;
-            padding: 20px 0;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .sidebar .nav-link {
-            color: white;
-            padding: 12px 20px;
-            width: 100%;
-            text-align: left;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar .nav-link i {
-            margin-right: 10px;
-        }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        .sidebar .btn-danger {
-            margin-top: auto;
-            margin-bottom: 20px;
-            width: 80%;
-            border-radius: 20px;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 40px;
-            width: 100%;
-        }
-        .container {
-            max-width: 600px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-            margin: auto;
-        }
-        h2 {
-            color: #f77fbe;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        .form-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #f77fbe;
-        }
-        .form-select,
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 15px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-        }
-        .btn-primary {
-            background-color: #f77fbe;
-            border-color: #f77fbe;
-            color: white;
-            display: block;
-            margin: 20px auto 0;
-            padding: 0.8rem 2rem;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #e063a3;
-            border-color: #e063a3;
-        }
-
-        .confirm {
-            height: 40px;
-            border-radius: 5px;
-            background-color: #e063a3;
-            border-color: #f77fbe;
-            color: white;
-            width: 80px;
-        }
-
-        .sidebar .badge {
-            font-size: 0.75rem;
-            padding: 5px 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="../customer/css/appointment_booking.css">
 </head>
 <body>
 <div class="sidebar">
@@ -300,6 +194,7 @@ if (isset($_SESSION['customer_id'])) {
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-danger"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
         <?php endif; ?>
+
         <form id="appointmentForm" action="" method="POST">
             <div class="mb-3">
                 <label for="service_id" class="form-label">Select Service:</label>
@@ -323,26 +218,77 @@ if (isset($_SESSION['customer_id'])) {
                 Book Appointment
             </button>
         </form>
+
+        <h4 class="mt-5">Current Appointments (Including Walk-Ins)</h4>
+
+        <?php
+        $query = "
+            SELECT a.appointment_date, a.appointment_time, 
+                   c.first_name AS customer_first, c.last_name AS customer_last,
+                   a.booking_type
+            FROM appointments a
+            JOIN customers c ON a.customer_id = c.customer_id
+            WHERE a.status != 'Cancelled'
+            ORDER BY a.appointment_date, a.appointment_time
+        ";
+        $result = mysqli_query($conn, $query);
+        ?>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Customer</th>
+                        <th>Booking Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (mysqli_num_rows($result) > 0): ?>
+                        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                        <tr>
+                            <td><?= date('F d, Y', strtotime($row['appointment_date'])) ?></td>
+                            <td><?= date('h:i A', strtotime($row['appointment_time'])) ?></td>
+                            <td><?= htmlspecialchars($row['customer_first'] . ' ' . $row['customer_last']) ?></td>
+                            <td>
+                                <?php if ($row['booking_type'] === 'walk-in'): ?>
+                                    <span class="badge bg-success">Walk-in</span>
+                                <?php else: ?>
+                                    <span class="badge bg-primary">Online</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="4">No appointments booked yet.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirm Your Appointment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to book this appointment?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="confirm" onclick="document.getElementById('appointmentForm').submit();">Confirm</button>
-            </div>
-        </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel">Confirm Your Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to book this appointment?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <!-- Confirm button triggers form submit -->
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('appointmentForm').submit();">
+          Confirm
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

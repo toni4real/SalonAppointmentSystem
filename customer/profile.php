@@ -68,15 +68,13 @@ if (isset($_SESSION['customer_id'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Edit Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/customer_profile.css">
+    <link rel="stylesheet" href="../customer/css/customer_profile.css">
 </head>
-
 <body>
 
     <div class="sidebar">

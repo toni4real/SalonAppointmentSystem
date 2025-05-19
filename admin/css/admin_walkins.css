@@ -108,7 +108,7 @@ body {
   width: calc(100% - 250px);
 }
 
-.appointments-table {
+.walkins-table {
   margin-top: 30px;
 }
 
@@ -152,36 +152,81 @@ body {
   padding: 14px 16px;
   vertical-align: middle;
 }
-
-.complete-btn {
+.btn {
   border-radius: 8px;
+  padding: 8px 20px;
   background-color: #6f42c1;
   color: white;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
-.complete-btn:hover {
+.btn:hover {
   background-color: #612cc2;
   color: white;
 }
 
-.btn-primary, .btn-success {
-  margin-right: 5px;
+.cancel-btn {
+  border-radius: 8px;
+  padding: 8px 20px;
+  background-color: #6c757d;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover, .btn-success:hover {
+.cancel-btn:hover {
+  background-color: #5a6268;
   color: white;
 }
 
-.btn-secondary {
+.edit-btn {
   border-radius: 8px;
   padding: 8px 20px;
+  background-color: #6f42c1;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
-.card-header {
+.edit-btn:hover {
+  background-color: #612cc2;
+  color: white;
+}
+
+.delete-btn {
+  border-radius: 8px;
+  padding: 8px 20px;
+  background-color: #dc3545;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.modal-header {
   background-color: #6f42c1;
-  padding: 16px;
+  color: #ffffff;
+  border-bottom: none;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 16px 20px;
+}
+
+.modal-footer {
+  border-top: none;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .sidebar .badge {
