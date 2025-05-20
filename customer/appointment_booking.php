@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($staff) {
         $staff_id = $staff['staff_id'];
 
-        $insertAppointment = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status, booking_type)
+        $insertAppointment = "INSERT INTO appointments (customer_id, staff_id, service_id, appointment_date, appointment_time, status, type)
                               VALUES (?, ?, ?, ?, ?, 'pending', 'online')";
         $stmt = mysqli_prepare($conn, $insertAppointment);
         mysqli_stmt_bind_param($stmt, 'iiiss', $customer_id, $staff_id, $service_id, $appointment_date, $appointment_time);
@@ -225,7 +225,7 @@ if (isset($_SESSION['customer_id'])) {
         $query = "
             SELECT a.appointment_date, a.appointment_time, 
                    c.first_name AS customer_first, c.last_name AS customer_last,
-                   a.booking_type
+                   a.type
             FROM appointments a
             JOIN customers c ON a.customer_id = c.customer_id
             WHERE a.status != 'Cancelled'
@@ -252,7 +252,7 @@ if (isset($_SESSION['customer_id'])) {
                             <td><?= date('h:i A', strtotime($row['appointment_time'])) ?></td>
                             <td><?= htmlspecialchars($row['customer_first'] . ' ' . $row['customer_last']) ?></td>
                             <td>
-                                <?php if ($row['booking_type'] === 'walk-in'): ?>
+                                <?php if ($row['type'] === 'walk-in'): ?>
                                     <span class="badge bg-success">Walk-in</span>
                                 <?php else: ?>
                                     <span class="badge bg-primary">Online</span>

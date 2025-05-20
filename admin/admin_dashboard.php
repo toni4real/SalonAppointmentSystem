@@ -10,6 +10,40 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
+// Get the selected service filter from GET parameters
+$selectedService = isset($_GET['service']) ? $_GET['service'] : '';
+
+// Prepare the base query for appointments, joining customers and services
+$query = "
+SELECT
+    customers.first_name AS customer_name,
+    services.service_name,
+    appointments.appointment_date,
+    appointments.appointment_time,
+    appointments.type
+
+FROM appointments
+JOIN customers ON appointments.customer_id = customers.customer_id
+JOIN services ON appointments.service_id = services.service_id
+";
+
+// If a service is selected, add WHERE clause to filter by service
+if ($selectedService !== '') {
+    $query .= " WHERE services.service_name = ?";
+}
+
+$query .= " ORDER BY appointments.appointment_date DESC, appointments.appointment_time DESC LIMIT 50";
+
+// Prepare and execute query
+if ($selectedService !== '') {
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $selectedService);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query($query);
+}
+
 function getCount($query) {
     global $conn;
     $result = mysqli_query($conn, $query);
@@ -22,11 +56,11 @@ function getCount($query) {
 $admin_id = $_SESSION['admin_id'];
 
 // Get admin's name
-$stmt = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
-$stmt->bind_param("i", $admin_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$adminData = $result->fetch_assoc();
+$stmtAdmin = $conn->prepare("SELECT first_name FROM admins WHERE admin_id = ?");
+$stmtAdmin->bind_param("i", $admin_id);
+$stmtAdmin->execute();
+$resultAdmin = $stmtAdmin->get_result();
+$adminData = $resultAdmin->fetch_assoc();
 
 $firstName = explode(' ', $adminData['first_name'])[0]; // Get only the first word of the name
 
@@ -37,18 +71,27 @@ $pendingPayments = getCount("SELECT COUNT(*) as total FROM appointments WHERE pa
 
 // Get unread notification count for the admin
 $unreadCount = 0;
-
 if ($admin_id) {
-    $stmt = $conn->prepare("
-        SELECT COUNT(*) AS unread_count
-        FROM admin_notifications
-        WHERE is_read = 0
+    $stmtNotify = $conn->prepare("
+    SELECT COUNT(*) AS unread_count
+    FROM admin_notifications
+    WHERE is_read = 0
     ");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
-    $unreadCount = $data['unread_count'];
+    $stmtNotify->execute();
+    $resultNotify = $stmtNotify->get_result();
+    $dataNotify = $resultNotify->fetch_assoc();
+    $unreadCount = $dataNotify['unread_count'];
 }
+
+// Fetch all services for the dropdown filter
+$servicesResult = $conn->query("SELECT service_name FROM services ORDER BY service_name ASC");
+$services = [];
+if ($servicesResult && $servicesResult->num_rows > 0) {
+    while ($serviceRow = $servicesResult->fetch_assoc()) {
+        $services[] = $serviceRow['service_name'];
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -173,10 +216,76 @@ if ($admin_id) {
                     </div>
                 </div>
             </div>
+            <div class="col-md-7 mb-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">All Services Usage</h5>
+                  <div class="mb-3">
+                    <label for="serviceSelect" class="form-label">Select Service:</label>
+                    <select id="serviceSelect" class="form-select">
+                      <option value="">-- All Services --</option>
+                    </select>
+                  </div>
+                  <canvas id="allServicesChart" height="200"></canvas>
+                  <form method="GET" class="mb-3">
+        <label for="service" class="form-label">Filter Appointments by Service:</label>
+        <select name="service" id="service" class="form-select" onchange="this.form.submit()">
+            <option value="">-- All Services --</option>
+            <?php foreach ($services as $serviceName): ?>
+                <option value="<?= htmlspecialchars($serviceName) ?>" <?= ($serviceName === $selectedService) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($serviceName) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </form>
+
+    <!-- Appointments Table -->
+    
+    <table class="table table-striped table-bordered ">
+        <thead>
+    <tr>
+        <th>Customer Name</th>
+        <th>Service Name</th> <!-- ✅ Add this -->
+        <th>Date</th>
+        <th>Time</th>
+        <th>Type</th>
+    </tr>
+</thead>
+
+        <tbody>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+<tr>
+    <td><?= htmlspecialchars($row['customer_name']) ?></td>
+    <td><?= htmlspecialchars($row['service_name']) ?></td> <!-- ✅ Add this -->
+    <td><?= htmlspecialchars(date('M d, Y', strtotime($row['appointment_date']))) ?></td>
+    <td><?= htmlspecialchars(date('h:i A', strtotime($row['appointment_time']))) ?></td>
+    <td><?= htmlspecialchars($row['type']) ?></td>
+</tr>
+<?php endwhile; ?>
+
+        <?php else: ?>
+            <tr>
+                <td colspan="4" class="text-center">No appointments found.</td>
+            </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
+                </div>
+              </div>
+            </div>
+
+           
+            
+
     </div>
+          
+
     </div>
 
 </div>
+
+
 
 <script>
         fetch('charts/appointments_per_month.php')
@@ -296,7 +405,111 @@ fetch('charts/revenue_per_month.php')
   });
 </script>
 
+<script>
+let allServicesChart = null;
+
+function renderAllServicesChart(labels, data) {
+  const ctx = document.getElementById('allServicesChart').getContext('2d');
+
+  if (allServicesChart) {
+    allServicesChart.destroy();
+  }
+
+  allServicesChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Service Usage',
+        data: data,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(255, 159, 64, 0.6)',
+          'rgba(255, 205, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)',
+          'rgba(201, 203, 207, 0.6)',
+          'rgba(54, 162, 235, 0.6)'
+        ],
+        borderColor: 'rgba(255,255,255,1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+}
+
+function loadServices(selected = '') {
+  fetch(`charts/all_services.php${selected ? '?service=' + selected : ''}`)
+    .then(response => response.json())
+    .then(result => {
+      const dropdown = document.getElementById('serviceSelect');
+      dropdown.innerHTML = '<option value="">-- All Services --</option>';
+      result.services.forEach(service => {
+        const opt = document.createElement('option');
+        opt.value = service;
+        opt.textContent = service;
+        if (service === selected) opt.selected = true;
+        dropdown.appendChild(opt);
+      });
+      renderAllServicesChart(result.labels, result.data);
+    })
+    .catch(error => console.error('Chart load error:', error));
+}
+
+// Initial load
+loadServices();
+
+// Event listener for dropdown change
+document.getElementById('serviceSelect').addEventListener('change', function () {
+  const selectedService = this.value;
+  loadServices(selectedService);
+});
+</script>
+
+<script>
+function loadServiceAppointmentsDropdown() {
+  fetch('charts/all_services.php')
+    .then(res => res.json())
+    .then(data => {
+      const dropdown = document.getElementById('serviceAppointmentsSelect');
+      dropdown.innerHTML = '<option value="">-- Select a Service --</option>';
+      data.services.forEach(service => {
+        const option = document.createElement('option');
+        option.value = service;
+        option.textContent = service;
+        dropdown.appendChild(option);
+      });
+    });
+}
+</script>
+
+<script>
+function filterByService() {
+  const select = document.getElementById('serviceFilter');
+  const selectedService = select.value;
+  const url = new URL(window.location.href);
+  
+  if (selectedService) {
+    url.searchParams.set('service', selectedService);
+  } else {
+    url.searchParams.delete('service');
+  }
+  
+  window.location.href = url.toString();  
+}
+</script>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>
