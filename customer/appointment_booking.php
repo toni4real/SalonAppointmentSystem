@@ -9,7 +9,20 @@ if (!isset($_SESSION['customer_id'])) {
 }
 
 $customer_id = $_SESSION['customer_id'];
-$serviceQuery = mysqli_query($conn, "SELECT service_id, service_name, price FROM services");
+$serviceQuery = mysqli_query($conn, "
+    SELECT s.service_id, s.service_name, s.price, 
+           p.discount_percent,
+           (s.price - (s.price * p.discount_percent)) AS discounted_price
+    FROM services s
+    LEFT JOIN (
+        SELECT discount_percent 
+        FROM promos 
+        WHERE is_active = 1 
+        AND CURDATE() BETWEEN start_date AND end_date 
+        ORDER BY discount_percent DESC 
+        LIMIT 1
+    ) p ON 1 = 1
+");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $service_id = $_POST['service_id'];
@@ -60,8 +73,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $serviceResult = mysqli_query($conn, "SELECT price FROM services WHERE service_id = $service_id");
-    $service = mysqli_fetch_assoc($serviceResult);
-    $price = $service['price'];
+        $service = mysqli_fetch_assoc($serviceResult);
+        $original_price = $service['price'];
+        $price = $original_price; // Default
+
+        // Check for active promo
+        $promoResult = mysqli_query($conn, "
+            SELECT discount_percent 
+            FROM promos 
+            WHERE is_active = 1 
+            AND CURDATE() BETWEEN start_date AND end_date 
+            ORDER BY discount_percent DESC 
+            LIMIT 1
+        ");
+
+        if ($promoResult && mysqli_num_rows($promoResult) > 0) {
+            $promo = mysqli_fetch_assoc($promoResult);
+            $discount = $promo['discount_percent'];
+            $price = $original_price - ($original_price * $discount);
+        }
+
 
     $dailyLimit = 10;
 
@@ -200,9 +231,23 @@ if (isset($_SESSION['customer_id'])) {
                 <label for="service_id" class="form-label">Select Service:</label>
                 <select name="service_id" class="form-select" required>
                     <?php while ($service = mysqli_fetch_assoc($serviceQuery)): ?>
-                        <option value="<?php echo $service['service_id']; ?>">
-                            <?php echo htmlspecialchars($service['service_name']) . " - PHP " . $service['price']; ?>
-                        </option>
+                        <?php
+$hasDiscount = isset($service['discount_percent']) && $service['discount_percent'] > 0;
+$original = number_format($service['price'], 2);
+$discounted = number_format($service['discounted_price'], 2);
+$discountPercent = $hasDiscount ? round($service['discount_percent'] * 100) : 0;
+$label = htmlspecialchars($service['service_name']);
+
+if ($hasDiscount) {
+    $display = "$label - PHP $original → PHP $discounted ({$discountPercent}% OFF)";
+} else {
+    $display = "$label - PHP $original";
+}
+?>
+<option value="<?php echo $service['service_id']; ?>">
+    <?php echo $display; ?>
+</option>
+
                     <?php endwhile; ?>
                 </select>
             </div>

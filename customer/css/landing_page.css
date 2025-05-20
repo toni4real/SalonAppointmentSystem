@@ -96,7 +96,7 @@ html {
 
 
 .hero-section {
-    background-image: url('../image/salon.png'); /* Ensure the path is correct */
+    background-image: url('salon.png'); /* Ensure the path is correct */
     background-size: cover; /* Ensures the image covers the entire container */
     background-position: center center; /* Keeps the image centered */
     background-repeat: no-repeat; /* Prevents image repetition */

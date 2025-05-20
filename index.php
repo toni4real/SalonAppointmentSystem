@@ -1,6 +1,12 @@
-<?php
+<?php 
 require_once 'includes/db_connection.php';
 session_start();
+
+// Check for active promo
+$today = date('Y-m-d');
+$promoQuery = "SELECT * FROM promos WHERE is_active = 1 AND start_date <= '$today' AND end_date >= '$today' LIMIT 1";
+$promoResult = mysqli_query($conn, $promoQuery);
+$activePromo = mysqli_fetch_assoc($promoResult);
 ?>
 
 <!DOCTYPE html>
@@ -15,10 +21,40 @@ session_start();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/landing_page.css">
-</head>
+    <link rel="stylesheet" href="customer/css/landing_page.css">
+</head> 
+
 
 <body>
+    <!-- In your <head>, after the Bootstrap CSS -->
+<style>
+.btn-violet {
+    background-color: #645394;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(100, 83, 148, 0.4);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-violet:hover {
+    background-color: #574881; /* slightly darker on hover */
+    box-shadow: 0 6px 18px rgba(100, 83, 148, 0.5);
+    transform: translateY(-2px);
+}
+.custom-modal-header {
+    background-color: #645394; /* Your preferred violet shade */
+    color: #fff;
+}
+.hero-section {
+    background-image: url('image/salon.png'); /* Ensure the path is correct */
+}
+</style>
+
+
+
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container d-flex align-items-center justify-content-between">
@@ -99,5 +135,35 @@ session_start();
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <?php if ($activePromo): ?>
+    <!-- Promo Modal -->
+    <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header custom-modal-header text-white">
+            <h5 class="modal-title " id="promoModalLabel">🎉 Special Promo!</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong><?php echo htmlspecialchars($activePromo['promo_name']); ?></strong> is here!</p>
+            <p>Enjoy <strong><?php echo $activePromo['discount_percent'] * 100; ?>%</strong> off from <strong><?php echo $activePromo['start_date']; ?></strong> to <strong><?php echo $activePromo['end_date']; ?></strong>.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn1 btn-violet" data-bs-dismiss="modal">Awesome!</button>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+        promoModal.show();
+    });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

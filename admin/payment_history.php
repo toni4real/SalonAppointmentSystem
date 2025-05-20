@@ -144,6 +144,11 @@ function formatPaymentStatusBadge($status) {
     <a class="nav-link <?= ($current_page == 'services_list.php') ? 'active' : ''; ?>" href="services_list.php">
         <i class="bi bi-stars"></i> Services
     </a>
+
+    <a class="nav-link <?= ($current_page == 'admin_promos.php') ? 'active' : ''; ?>" href="admin_promos.php">
+       <i class="bi bi-tag"></i> Promos
+    </a>
+
     <a class="nav-link <?= ($current_page == 'notifications.php') ? 'active' : ''; ?>" href="notifications.php">
         <i class="bi bi-bell-fill"></i> Notifications
         <?php if ($unreadCount > 0): ?>
